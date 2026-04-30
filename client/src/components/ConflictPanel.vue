@@ -9,14 +9,8 @@
 
     <div class="pair-detect">
       <h4>一对一检测</h4>
-      <select v-model="pair1">
-        <option value="">选择计划1</option>
-        <option v-for="p in plans" :key="p.id" :value="p.id">{{ p.plan_name || p.id.substring(0,8) }}</option>
-      </select>
-      <select v-model="pair2">
-        <option value="">选择计划2</option>
-        <option v-for="p in plans" :key="p.id" :value="p.id">{{ p.plan_name || p.id.substring(0,8) }}</option>
-      </select>
+      <n-select v-model:value="pair1" :options="planOptions1" placeholder="选择计划1" clearable filterable :consistent-menu-width="false" />
+      <n-select v-model:value="pair2" :options="planOptions2" placeholder="选择计划2" clearable filterable :consistent-menu-width="false" />
       <button class="btn-sm" @click="runPairDetect" :disabled="!pair1 || !pair2">检测</button>
     </div>
 
@@ -51,6 +45,7 @@ import { useRouter } from 'vue-router';
 import { useConflictStore } from '../stores/conflict';
 import { usePlansStore } from '../stores/plans';
 import { api } from '../utils/api';
+import { NSelect } from 'naive-ui';
 
 const router = useRouter();
 const conflictStore = useConflictStore();
@@ -59,9 +54,19 @@ const plansStore = usePlansStore();
 const conflicts = computed(() => conflictStore.conflicts);
 const plans = computed(() => plansStore.plans);
 const loading = ref(false);
-const pair1 = ref('');
-const pair2 = ref('');
+const pair1 = ref(null);
+const pair2 = ref(null);
 const pairResult = ref(null);
+
+const planOptions = computed(() =>
+  plans.value.map(p => ({ label: p.plan_name || p.id.substring(0, 8), value: p.id }))
+);
+const planOptions1 = computed(() =>
+  planOptions.value.filter(o => o.value !== pair2.value)
+);
+const planOptions2 = computed(() =>
+  planOptions.value.filter(o => o.value !== pair1.value)
+);
 
 function severityLabel(s) {
   const map = { high: '高危', medium: '中危', low: '低危' };
@@ -116,7 +121,7 @@ onMounted(async () => {
 .panel-header h3 { margin: 0; font-size: 16px; color: var(--green-primary); font-weight: 600; }
 .panel-buttons { display: flex; gap: 6px; }
 .pair-detect {
-  background: rgba(42, 212, 178, 0.03);
+  background: rgba(120, 190, 45, 0.03);
   border: 1px solid var(--border-default);
   border-radius: var(--radius-md);
   padding: 12px;
@@ -126,26 +131,11 @@ onMounted(async () => {
   align-items: center;
 }
 .pair-detect h4 { font-size: 13px; color: var(--green-primary); margin: 0; width: 100%; font-weight: 500; }
-.pair-detect select {
-  padding: 6px 10px;
-  background: var(--bg-tertiary);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-sm);
-  color: var(--text-primary);
-  font-size: 12px;
-  outline: none;
-  transition: all var(--transition-fast);
-  cursor: pointer;
-}
-.pair-detect select:focus {
-  border-color: var(--border-focus);
-  box-shadow: var(--shadow-glow);
-}
 .pair-result {
   padding: 10px;
   border-radius: var(--radius-sm);
   font-size: 13px;
-  background: rgba(42, 212, 178, 0.03);
+  background: rgba(120, 190, 45, 0.03);
   border: 1px solid var(--border-default);
 }
 .pair-result.has-conflict {
@@ -155,7 +145,7 @@ onMounted(async () => {
 .conflict-list { display: flex; flex-direction: column; gap: 6px; }
 .empty { text-align: center; color: var(--text-disabled); padding: 20px; font-size: 13px; }
 .conflict-item {
-  background: rgba(42, 212, 178, 0.03);
+  background: rgba(120, 190, 45, 0.03);
   border: 1px solid var(--border-default);
   border-radius: var(--radius-md);
   padding: 12px;
@@ -169,7 +159,7 @@ onMounted(async () => {
 .conflict-item.severity-border-low { border-left: 3px solid var(--green-primary); }
 .conflict-item:hover {
   border-color: var(--green-primary);
-  box-shadow: 0 0 8px rgba(42, 212, 178, 0.1);
+  box-shadow: 0 0 8px rgba(120, 190, 45, 0.1);
 }
 .conflict-info { display: flex; flex-direction: column; gap: 2px; }
 .conflict-info strong { color: var(--text-primary); }
@@ -178,5 +168,5 @@ onMounted(async () => {
 .severity-tag { font-size: 11px; padding: 2px 8px; border-radius: var(--radius-sm); font-weight: 500; }
 .severity-high { color: var(--error-color); background: rgba(255, 92, 92, 0.12); }
 .severity-medium { color: var(--warning-color); background: rgba(255, 179, 71, 0.12); }
-.severity-low { color: var(--green-primary); background: rgba(42, 212, 178, 0.12); }
+.severity-low { color: var(--green-primary); background: rgba(120, 190, 45, 0.12); }
 </style>

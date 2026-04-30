@@ -13,18 +13,18 @@
 | 变量名 | 色值 | 用途 |
 |--------|------|------|
 | `--bg-primary` | `#0A0F0F` | 主背景（纯黑微带绿相） |
-| `--bg-secondary` | `#111515` | 卡片、侧栏、下拉菜单底层 |
+| `--bg-secondary` | `rgba(17, 21, 21, 0.5)` | 卡片、侧栏、下拉菜单底层（50%透明） |
 | `--bg-tertiary` | `#1A1F1F` | 悬浮层、输入框、按钮次要背景 |
 | `--border-default` | `#2A3333` | 默认边框 |
-| `--border-focus` | `#2AD4B2` | 聚焦组件边框（霓虹绿） |
+| `--border-focus` | `#78BE2D` | 聚焦组件边框（霓虹绿） |
 
 ### 绿色主题色
 | 变量名 | 色值 | 用途 |
 |--------|------|------|
-| `--green-primary` | `#2AD4B2` | 主绿色（高对比、舒适） |
-| `--green-hover` | `#3EE6C4` | 悬浮/点亮绿 |
-| `--green-active` | `#1CB894` | 按压/选中绿 |
-| `--green-glow` | `rgba(42, 212, 178, 0.4)` | 外发光阴影 |
+| `--green-primary` | `#78BE2D` | 主绿色（高对比、舒适） |
+| `--green-hover` | `#8FD43E` | 悬浮/点亮绿 |
+| `--green-active` | `#5E9C22` | 按压/选中绿 |
+| `--green-glow` | `rgba(120, 190, 45, 0.4)` | 外发光阴影 |
 
 ### 文本 & 图标
 | 变量名 | 色值 | 用途 |
@@ -35,7 +35,7 @@
 
 ### 状态色
 - 错误：`#FF5C5C` (搭配半透黑红底)
-- 成功：`#2AD4B2` (沿用主题绿)
+- 成功：`#78BE2D` (沿用主题绿)
 - 警告：`#FFB347`
 
 ---
@@ -45,14 +45,14 @@
 ```css
 :root {
   --bg-primary: #0A0F0F;
-  --bg-secondary: #111515;
+  --bg-secondary: rgba(17, 21, 21, 0.5);
   --bg-tertiary: #1A1F1F;
   --border-default: #2A3333;
-  --border-focus: #2AD4B2;
-  --green-primary: #2AD4B2;
-  --green-hover: #3EE6C4;
-  --green-active: #1CB894;
-  --green-glow: rgba(42, 212, 178, 0.4);
+  --border-focus: #78BE2D;
+  --green-primary: #78BE2D;
+  --green-hover: #8FD43E;
+  --green-active: #5E9C22;
+  --green-glow: rgba(120, 190, 45, 0.4);
   --text-primary: #EDEDED;
   --text-secondary: #B0C4C4;
   --text-disabled: #5D6E6E;
@@ -60,7 +60,7 @@
   --radius-md: 10px;
   --radius-lg: 16px;
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.6);
-  --shadow-glow: 0 0 0 1px rgba(42, 212, 178, 0.2), 0 0 0 3px rgba(42, 212, 178, 0.1);
+  --shadow-glow: 0 0 0 1px rgba(120, 190, 45, 0.2), 0 0 0 3px rgba(120, 190, 45, 0.1);
   --transition-fast: 0.15s ease;
 }
 ```
@@ -105,7 +105,7 @@
 
 #### 科技风特色
 - 默认无边框，但可添加细微内阴影
-- 次要按钮边框渐变：`border-image: linear-gradient(135deg, var(--green-primary), #1C7A64) 1`
+- 次要按钮边框渐变：`border-image: linear-gradient(135deg, var(--green-primary), #4A7A1A) 1`
 - 圆形按钮（图标按钮）：宽高一致，圆角50%
 
 ```css
@@ -156,7 +156,7 @@
 
 #### 下拉选项样式
 - 选项内边距：`10px 14px`
-- 悬浮选项背景：`rgba(42, 212, 178, 0.12)`，文字颜色变绿
+- 悬浮选项背景：`rgba(120, 190, 45, 0.12)`，文字颜色变绿
 - 选中项：左侧绿色勾号或背景微光，绿字
 - 分隔线：`1px solid var(--border-default)`
 
@@ -195,11 +195,11 @@
   transition: background 0.1s;
 }
 .select-option:hover {
-  background: rgba(42, 212, 178, 0.1);
+  background: rgba(120, 190, 45, 0.1);
   color: var(--green-primary);
 }
 .select-option.selected {
-  background: rgba(42, 212, 178, 0.16);
+  background: rgba(120, 190, 45, 0.16);
   color: var(--green-primary);
   font-weight: 500;
 }
@@ -325,7 +325,7 @@
   cursor: pointer;
 }
 .calendar-cell:hover {
-  background: rgba(42, 212, 178, 0.2);
+  background: rgba(120, 190, 45, 0.2);
   color: var(--green-primary);
 }
 .calendar-cell.selected {
@@ -343,7 +343,7 @@
 }
 .time-picker-option.active {
   border-color: var(--green-primary);
-  background: rgba(42, 212, 178, 0.1);
+  background: rgba(120, 190, 45, 0.1);
 }
 ```
 
@@ -378,7 +378,7 @@
 ## 6. 可访问性提示
 
 - 所有交互元素必须具有 `:focus-visible` 样式，禁用默认 outline 但提供 `box-shadow` 发光绿。
-- 对比度检查：绿色背景上的文本建议使用 `#0A0F0F`（黑）或白色需确保绿色足够深（当前主绿 `#2AD4B2` 对黑底文字无问题，对白底对比度低，但我们只有黑底，所以安全）。
+- 对比度检查：绿色背景上的文本建议使用 `#0A0F0F`（黑）或白色需确保绿色足够深（当前主绿 `#78BE2D` 对黑底文字无问题，对白底对比度低，但我们只有黑底，所以安全）。
 - 禁用状态 `cursor: not-allowed`，透明度降低。
 - 提供 `aria-label` 对图标按钮、下拉箭头等。
 

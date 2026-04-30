@@ -105,5 +105,5 @@ onMounted(async () => {
 .severity-tag { font-size: 11px; padding: 2px 8px; border-radius: var(--radius-sm); font-weight: 500; }
 .severity-high { color: var(--error-color); background: rgba(255, 92, 92, 0.12); }
 .severity-medium { color: var(--warning-color); background: rgba(255, 179, 71, 0.12); }
-.severity-low { color: var(--green-primary); background: rgba(42, 212, 178, 0.12); }
+.severity-low { color: var(--green-primary); background: rgba(120, 190, 45, 0.12); }
 </style>

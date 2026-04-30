@@ -75,7 +75,7 @@ onMounted(() => store.fetchZones());
 .panel-header { display: flex; justify-content: space-between; align-items: center; }
 .panel-header h3 { margin: 0; font-size: 16px; color: var(--green-primary); font-weight: 600; }
 .form-card {
-  background: rgba(42, 212, 178, 0.03);
+  background: rgba(120, 190, 45, 0.03);
   border: 1px solid var(--border-default);
   border-radius: var(--radius-lg);
   padding: 16px;
@@ -119,7 +119,7 @@ onMounted(() => store.fetchZones());
 .zone-list { display: flex; flex-direction: column; gap: 6px; }
 .empty { text-align: center; color: var(--text-disabled); padding: 20px; font-size: 13px; }
 .zone-item {
-  background: rgba(42, 212, 178, 0.03);
+  background: rgba(120, 190, 45, 0.03);
   border: 1px solid var(--border-default);
   border-radius: var(--radius-md);
   padding: 12px;
@@ -130,7 +130,7 @@ onMounted(() => store.fetchZones());
 }
 .zone-item:hover {
   border-color: var(--green-primary);
-  box-shadow: 0 0 8px rgba(42, 212, 178, 0.1);
+  box-shadow: 0 0 8px rgba(120, 190, 45, 0.1);
 }
 .zone-info { display: flex; flex-direction: column; gap: 2px; }
 .zone-info strong { color: var(--text-primary); font-size: 14px; }

@@ -152,12 +152,12 @@ onBeforeUnmount(() => {
 .msg { padding: 10px 14px; border-radius: var(--radius-md); max-width: 85%; }
 .message-user {
   align-self: flex-end;
-  background: rgba(42, 212, 178, 0.1);
-  border: 1px solid rgba(42, 212, 178, 0.25);
+  background: rgba(120, 190, 45, 0.1);
+  border: 1px solid rgba(120, 190, 45, 0.25);
 }
 .message-assistant {
   align-self: flex-start;
-  background: rgba(42, 212, 178, 0.04);
+  background: rgba(120, 190, 45, 0.04);
   border: 1px solid var(--border-default);
 }
 .message-tool {
@@ -167,7 +167,7 @@ onBeforeUnmount(() => {
 }
 .message-system {
   align-self: center;
-  background: rgba(42, 212, 178, 0.03);
+  background: rgba(120, 190, 45, 0.03);
   border: 1px dashed var(--border-default);
   font-size: 12px;
   color: var(--text-secondary);
@@ -179,11 +179,11 @@ onBeforeUnmount(() => {
 .msg-role { margin-bottom: 4px; }
 .role-badge { font-size: 11px; padding: 2px 8px; border-radius: var(--radius-sm); font-weight: 500; }
 .role-badge.tool { background: rgba(255, 179, 71, 0.15); color: var(--warning-color); }
-.role-badge.assistant { background: rgba(42, 212, 178, 0.15); color: var(--green-primary); }
-.role-badge.user { background: rgba(42, 212, 178, 0.1); color: var(--green-hover); }
+.role-badge.assistant { background: rgba(120, 190, 45, 0.15); color: var(--green-primary); }
+.role-badge.user { background: rgba(120, 190, 45, 0.1); color: var(--green-hover); }
 .confirm-bar {
   display: flex; align-items: center; gap: 10px; padding: 12px 14px;
-  background: rgba(42, 212, 178, 0.06); border-top: 1px solid var(--border-default); color: var(--text-primary); font-size: 13px;
+  background: rgba(120, 190, 45, 0.06); border-top: 1px solid var(--border-default); color: var(--text-primary); font-size: 13px;
 }
 .btn-accept {
   padding: 8px 20px;

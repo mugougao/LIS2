@@ -30,13 +30,15 @@ const activeTab = ref('plans');
 
 <style scoped>
 .main-layout {
-  display: flex;
+  position: relative;
   width: 100%;
   height: 100%;
 }
 .sidebar {
+  position: absolute;
+  left: 0;
+  top: 0;
   width: 420px;
-  min-width: 420px;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -44,11 +46,13 @@ const activeTab = ref('plans');
   color: var(--text-primary);
   z-index: 10;
   border-right: 1px solid var(--border-default);
+  background: rgba(17, 21, 21, 0.7);
+  
 }
 .sidebar-tabs {
   display: flex;
   border-bottom: 1px solid var(--border-default);
-  background: var(--bg-primary);
+  background: rgba(29, 29, 29, 0.5);
 }
 .sidebar-tabs button {
   flex: 1;
@@ -67,7 +71,7 @@ const activeTab = ref('plans');
 }
 .sidebar-tabs button.active {
   color: var(--green-primary);
-  background: rgba(42, 212, 178, 0.08);
+  background: rgba(120, 190, 45, 0.08);
 }
 .sidebar-tabs button.active::after {
   content: '';
@@ -85,7 +89,7 @@ const activeTab = ref('plans');
   padding: 14px;
 }
 .map-wrapper {
-  flex: 1;
+  width: 100%;
   height: 100%;
 }
 </style>

@@ -1,0 +1,1 @@
+import{_ as c,c as o,a as s,o as t}from"./index-DMANVR4e.js";const a={},n={class:"conflict-view"};function r(_,e){return t(),o("div",n,[...e[0]||(e[0]=[s("div",{class:"placeholder"},"冲突管理模块",-1)])])}const i=c(a,[["render",r],["__scopeId","data-v-6290b304"]]);export{i as default};

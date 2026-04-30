@@ -8,10 +8,7 @@
     <div v-if="showForm" class="form-card">
       <div class="form-row">
         <label>运营商</label>
-        <select v-model="form.operator_id">
-          <option value="">-- 选择 --</option>
-          <option v-for="op in operators" :key="op.id" :value="op.id">{{ op.name }}</option>
-        </select>
+        <n-select v-model:value="form.operator_id" :options="operatorOptions" placeholder="选择运营商" clearable :consistent-menu-width="false" />
       </div>
       <div class="form-row">
         <label>计划名称</label>
@@ -20,15 +17,15 @@
       <div class="form-row">
         <label>起飞时间</label>
         <div class="datetime-row">
-          <input type="date" v-model="form.start_date" />
-          <input type="time" v-model="form.start_time_only" step="60" />
+          <n-date-picker type="date" v-model:formatted-value="form.start_date" value-format="yyyy-MM-dd" placeholder="选择日期" clearable />
+          <n-time-picker v-model:value="startTimeTs" format="HH:mm" placeholder="选择时间" clearable :is-input-disabled="false" />
         </div>
       </div>
       <div class="form-row">
         <label>降落时间</label>
         <div class="datetime-row">
-          <input type="date" v-model="form.end_date" />
-          <input type="time" v-model="form.end_time_only" step="60" />
+          <n-date-picker type="date" v-model:formatted-value="form.end_date" value-format="yyyy-MM-dd" placeholder="选择日期" clearable />
+          <n-time-picker v-model:value="endTimeTs" format="HH:mm" placeholder="选择时间" clearable :is-input-disabled="false" />
         </div>
       </div>
       <div class="form-group">
@@ -95,24 +92,20 @@
       <h4>编辑计划: {{ editForm.plan_name }}</h4>
       <div class="form-row">
         <label>状态</label>
-        <select v-model="editForm.status">
-          <option value="active">激活</option>
-          <option value="modified">已修改</option>
-          <option value="cancelled">已取消</option>
-        </select>
+        <n-select v-model:value="editForm.status" :options="statusOptions" :consistent-menu-width="false" />
       </div>
       <div class="form-row">
         <label>起飞时间</label>
         <div class="datetime-row">
-          <input type="date" v-model="editForm.start_date" />
-          <input type="time" v-model="editForm.start_time_only" step="60" />
+          <n-date-picker type="date" v-model:formatted-value="editForm.start_date" value-format="yyyy-MM-dd" placeholder="选择日期" clearable />
+          <n-time-picker v-model:value="editStartTimeTs" format="HH:mm" placeholder="选择时间" clearable :is-input-disabled="false" />
         </div>
       </div>
       <div class="form-row">
         <label>降落时间</label>
         <div class="datetime-row">
-          <input type="date" v-model="editForm.end_date" />
-          <input type="time" v-model="editForm.end_time_only" step="60" />
+          <n-date-picker type="date" v-model:formatted-value="editForm.end_date" value-format="yyyy-MM-dd" placeholder="选择日期" clearable />
+          <n-time-picker v-model:value="editEndTimeTs" format="HH:mm" placeholder="选择时间" clearable :is-input-disabled="false" />
         </div>
       </div>
       <div class="form-row-inline">
@@ -128,9 +121,9 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed } from 'vue';
+import { ref, reactive, onMounted, computed, watch } from 'vue';
 import { usePlansStore } from '../stores/plans';
-import { api } from '../utils/api';
+import { NSelect, NDatePicker, NTimePicker } from 'naive-ui';
 
 const plansStore = usePlansStore();
 
@@ -139,6 +132,42 @@ const operators = computed(() => plansStore.operators);
 
 const showForm = ref(false);
 const editMode = ref(false);
+
+const operatorOptions = computed(() =>
+  operators.value.map(op => ({ label: op.name, value: op.id }))
+);
+
+const statusOptions = [
+  { label: '激活', value: 'active' },
+  { label: '已修改', value: 'modified' },
+  { label: '已取消', value: 'cancelled' }
+];
+
+const startTimeTs = ref(null);
+const endTimeTs = ref(null);
+const editStartTimeTs = ref(null);
+const editEndTimeTs = ref(null);
+
+function tsToTimeStr(ts) {
+  if (ts === null || ts === undefined) return '';
+  const d = new Date(ts);
+  const hh = String(d.getHours()).padStart(2, '0');
+  const mm = String(d.getMinutes()).padStart(2, '0');
+  return `${hh}:${mm}`;
+}
+
+function timeStrToTs(str) {
+  if (!str) return null;
+  const [h, m] = str.split(':').map(Number);
+  const d = new Date();
+  d.setHours(h, m, 0, 0);
+  return d.getTime();
+}
+
+watch(startTimeTs, (val) => { form.start_time_only = tsToTimeStr(val); });
+watch(endTimeTs, (val) => { form.end_time_only = tsToTimeStr(val); });
+watch(editStartTimeTs, (val) => { editForm.start_time_only = tsToTimeStr(val); });
+watch(editEndTimeTs, (val) => { editForm.end_time_only = tsToTimeStr(val); });
 
 function nowDateTime() {
   const d = new Date();
@@ -157,8 +186,10 @@ function toISOTime(d) {
 const defaultForm = () => {
   const start = nowDateTime();
   const end = new Date(start.getTime() + 3600000);
+  startTimeTs.value = start.getTime();
+  endTimeTs.value = end.getTime();
   return {
-    operator_id: '',
+    operator_id: null,
     plan_name: '',
     start_date: toISODate(start),
     start_time_only: toISOTime(start),
@@ -218,6 +249,8 @@ function splitISODateTime(iso) {
 function editPlan(plan) {
   const start = splitISODateTime(plan.start_time);
   const end = splitISODateTime(plan.end_time);
+  editStartTimeTs.value = timeStrToTs(start.time);
+  editEndTimeTs.value = timeStrToTs(end.time);
   Object.assign(editForm, {
     id: plan.id,
     plan_name: plan.plan_name,
@@ -266,7 +299,7 @@ onMounted(async () => {
 .panel-header { display: flex; justify-content: space-between; align-items: center; }
 .panel-header h3 { margin: 0; font-size: 16px; color: var(--green-primary); font-weight: 600; }
 .form-card {
-  background: rgba(42, 212, 178, 0.03);
+  background: rgba(120, 190, 45, 0.03);
   border: 1px solid var(--border-default);
   border-radius: var(--radius-lg);
   padding: 16px;
@@ -276,7 +309,7 @@ onMounted(async () => {
 }
 .form-row { display: flex; flex-direction: column; gap: 4px; }
 .form-row label { font-size: 12px; color: var(--text-secondary); font-weight: 500; }
-.form-row input, .form-row select, .form-row textarea {
+.form-row input, .form-row textarea {
   padding: 8px 12px;
   background: var(--bg-tertiary);
   border: 1px solid var(--border-default);
@@ -286,23 +319,17 @@ onMounted(async () => {
   transition: all var(--transition-fast);
   outline: none;
   font-family: inherit;
+  resize: vertical;
 }
-.form-row input:focus, .form-row select:focus, .form-row textarea:focus {
+.form-row input:focus, .form-row textarea:focus {
   border-color: var(--border-focus);
   box-shadow: var(--shadow-glow);
-}
-.form-row select {
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%232AD4B2' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  padding-right: 32px;
-  cursor: pointer;
 }
 .form-row-inline { display: flex; gap: 6px; }
 .form-row-inline input {
   flex: 1;
-  padding: 8px 12px;
+  min-width: 0;
+  padding: 8px 10px;
   background: var(--bg-tertiary);
   border: 1px solid var(--border-default);
   border-radius: var(--radius-md);
@@ -310,29 +337,23 @@ onMounted(async () => {
   font-size: 13px;
   outline: none;
   transition: all var(--transition-fast);
+}
+.form-row-inline input::-webkit-inner-spin-button,
+.form-row-inline input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.form-row-inline input[type="number"] {
+  -moz-appearance: textfield;
 }
 .form-row-inline input:focus {
   border-color: var(--border-focus);
   box-shadow: var(--shadow-glow);
 }
 .datetime-row { display: flex; gap: 6px; }
-.datetime-row input {
-  padding: 8px 12px;
-  background: var(--bg-tertiary);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-md);
-  color: var(--text-primary);
-  font-size: 13px;
-  outline: none;
-  transition: all var(--transition-fast);
-}
-.datetime-row input[type="date"] { flex: 1; min-width: 0; color-scheme: dark; }
-.datetime-row input[type="time"] { width: 110px; flex-shrink: 0; color-scheme: dark; }
-.datetime-row input:focus {
-  border-color: var(--border-focus);
-  box-shadow: var(--shadow-glow);
-}
-.form-group h4 { font-size: 13px; color: var(--green-primary); margin-bottom: 4px; font-weight: 500; }
+.datetime-row > :first-child { flex: 1; min-width: 0; }
+.datetime-row > :last-child { width: 110px; flex-shrink: 0; }
+.form-group h4 { font-size: 12px; color: var(--text-secondary); margin-bottom: 4px; font-weight: 500; }
 .checkbox-label {
   display: flex;
   align-items: center;
@@ -347,8 +368,8 @@ onMounted(async () => {
 .plan-list { display: flex; flex-direction: column; gap: 6px; }
 .empty { text-align: center; color: var(--text-disabled); padding: 20px; font-size: 13px; }
 .plan-item {
-  background: rgba(42, 212, 178, 0.03);
-  border: 1px solid var(--border-default);
+  background: rgba(62, 63, 62, 0.58);
+  border: 1px solid rgba(29, 29, 29, 0.5);
   border-radius: var(--radius-md);
   padding: 12px;
   display: flex;
@@ -358,7 +379,7 @@ onMounted(async () => {
 }
 .plan-item:hover {
   border-color: var(--green-primary);
-  box-shadow: 0 0 8px rgba(42, 212, 178, 0.1);
+  box-shadow: 0 0 8px rgba(120, 190, 45, 0.1);
 }
 .plan-info { display: flex; flex-direction: column; gap: 2px; }
 .plan-info strong { color: var(--text-primary); font-size: 14px; }
