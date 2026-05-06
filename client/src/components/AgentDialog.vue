@@ -136,6 +136,7 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
   height: 100%;
+  min-height: 0;
   background: var(--bg-secondary);
 }
 .connecting { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; color: var(--text-secondary); font-size: 14px; }
@@ -148,6 +149,17 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  min-height: 0;
+}
+.messages::-webkit-scrollbar {
+  width: 6px;
+}
+.messages::-webkit-scrollbar-track {
+  background: var(--bg-tertiary);
+}
+.messages::-webkit-scrollbar-thumb {
+  background: var(--green-primary);
+  border-radius: 10px;
 }
 .msg { padding: 10px 14px; border-radius: var(--radius-md); max-width: 85%; }
 .message-user {

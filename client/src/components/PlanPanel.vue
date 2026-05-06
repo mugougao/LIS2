@@ -82,7 +82,7 @@
           <span class="plan-time">{{ formatTime(plan.start_time) }} → {{ formatTime(plan.end_time) }}</span>
         </div>
         <div class="plan-actions">
-          <button class="btn-sm" @click="editPlan(plan)">编辑</button>
+          <button class="btn-secondary btn-sm" @click="editPlan(plan)">编辑</button>
           <button class="btn-sm btn-danger" @click="removePlan(plan.id)">删除</button>
         </div>
       </div>
@@ -320,6 +320,8 @@ onMounted(async () => {
   outline: none;
   font-family: inherit;
   resize: vertical;
+  width: 100%;
+  min-width: 0;
 }
 .form-row input:focus, .form-row textarea:focus {
   border-color: var(--border-focus);

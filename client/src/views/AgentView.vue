@@ -79,8 +79,8 @@ onMounted(async () => {
 }
 .back-btn:hover { border-color: var(--green-primary); color: var(--green-primary); }
 .conflict-summary { display: flex; gap: 12px; font-size: 12px; color: var(--text-secondary); width: 100%; }
-.agent-main { display: flex; flex: 1; overflow: hidden; }
-.agent-chat { width: 480px; min-width: 480px; height: 100%; border-right: 1px solid var(--border-default); }
+.agent-main { display: flex; flex: 1; overflow: hidden; min-height: 0; }
+.agent-chat { width: 480px; min-width: 480px; height: 100%; min-height: 0; display: flex; flex-direction: column; border-right: 1px solid var(--border-default); }
 .agent-map { flex: 1; height: 100%; }
 .resolved-overlay {
   position: absolute; inset: 0; background: rgba(10, 15, 15, 0.85); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 100;

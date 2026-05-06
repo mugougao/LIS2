@@ -114,14 +114,14 @@ code, pre, .mono {
   padding: 6px 14px;
   font-size: 13px;
   border-radius: var(--radius-sm);
+  cursor: pointer;
 }
 
 .btn-danger {
   color: var(--error-color);
-  border-color: var(--error-color);
   background: transparent;
   border: 1px solid var(--error-color);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   padding: 6px 14px;
   font-size: 13px;
   cursor: pointer;
@@ -130,6 +130,21 @@ code, pre, .mono {
 .btn-danger:hover {
   background: rgba(255, 92, 92, 0.1);
   box-shadow: 0 0 8px rgba(255, 92, 92, 0.3);
+}
+
+.btn-agent {
+  color: #4ECDC4;
+  background: transparent;
+  border: 1px solid #4ECDC4;
+  border-radius: var(--radius-sm);
+  padding: 6px 14px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.btn-agent:hover {
+  background: rgba(78, 205, 196, 0.1);
+  box-shadow: 0 0 8px rgba(78, 205, 196, 0.3);
 }
 
 .card {

@@ -14,11 +14,14 @@
         <label>GeoJSON 多边形</label>
         <textarea v-model="form.geometry_text" rows="4" placeholder='{"type":"Polygon","coordinates":[[[lon,lat],...]]}'></textarea>
       </div>
-      <div class="form-row-inline">
-        <input v-model.number="form.min_alt" type="number" placeholder="最低高度(m)" />
-        <input v-model.number="form.max_alt" type="number" placeholder="最高高度(m)" />
+      <div class="form-group">
+        <h4>高度限制范围</h4>
+        <div class="form-row-inline">
+          <input v-model.number="form.min_alt" type="number" step="any" placeholder="最低高度(m)" />
+          <input v-model.number="form.max_alt" type="number" step="any" placeholder="最高高度(m)" />
+        </div>
       </div>
-      <button class="btn-primary" @click="submitZone">提交</button>
+      <button class="btn-primary" @click="submitZone">提交禁飞区</button>
     </div>
 
     <div class="zone-list">
@@ -82,6 +85,7 @@ onMounted(() => store.fetchZones());
   display: flex;
   flex-direction: column;
   gap: 10px;
+  overflow: hidden;
 }
 .form-row { display: flex; flex-direction: column; gap: 4px; }
 .form-row label { font-size: 12px; color: var(--text-secondary); font-weight: 500; }
@@ -95,15 +99,20 @@ onMounted(() => store.fetchZones());
   outline: none;
   font-family: inherit;
   transition: all var(--transition-fast);
+  resize: vertical;
+  width: 100%;
+  min-width: 0;
 }
 .form-row input:focus, .form-row textarea:focus {
   border-color: var(--border-focus);
   box-shadow: var(--shadow-glow);
 }
+.form-group h4 { font-size: 12px; color: var(--text-secondary); margin-bottom: 4px; font-weight: 500; }
 .form-row-inline { display: flex; gap: 6px; }
 .form-row-inline input {
   flex: 1;
-  padding: 8px 12px;
+  min-width: 0;
+  padding: 8px 10px;
   background: var(--bg-tertiary);
   border: 1px solid var(--border-default);
   border-radius: var(--radius-md);
@@ -112,6 +121,14 @@ onMounted(() => store.fetchZones());
   outline: none;
   transition: all var(--transition-fast);
 }
+.form-row-inline input::-webkit-inner-spin-button,
+.form-row-inline input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.form-row-inline input[type="number"] {
+  -moz-appearance: textfield;
+}
 .form-row-inline input:focus {
   border-color: var(--border-focus);
   box-shadow: var(--shadow-glow);
@@ -119,8 +136,8 @@ onMounted(() => store.fetchZones());
 .zone-list { display: flex; flex-direction: column; gap: 6px; }
 .empty { text-align: center; color: var(--text-disabled); padding: 20px; font-size: 13px; }
 .zone-item {
-  background: rgba(120, 190, 45, 0.03);
-  border: 1px solid var(--border-default);
+  background: rgba(62, 63, 62, 0.58);
+  border: 1px solid rgba(29, 29, 29, 0.5);
   border-radius: var(--radius-md);
   padding: 12px;
   display: flex;

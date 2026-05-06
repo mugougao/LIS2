@@ -11,7 +11,7 @@
       <h4>一对一检测</h4>
       <n-select v-model:value="pair1" :options="planOptions1" placeholder="选择计划1" clearable filterable :consistent-menu-width="false" />
       <n-select v-model:value="pair2" :options="planOptions2" placeholder="选择计划2" clearable filterable :consistent-menu-width="false" />
-      <button class="btn-sm" @click="runPairDetect" :disabled="!pair1 || !pair2">检测</button>
+      <button class="btn-primary btn-sm" @click="runPairDetect" :disabled="!pair1 || !pair2">检测</button>
     </div>
 
     <div v-if="pairResult !== null" class="pair-result" :class="{ 'has-conflict': pairResult.hasConflict }">
@@ -31,7 +31,7 @@
           <span class="conflict-time">{{ formatTime(c.time_window_start) }} ~ {{ formatTime(c.time_window_end) }}</span>
         </div>
         <div class="conflict-actions">
-          <button class="btn-sm btn-agent" @click="openAgent(c.id)">智能解脱</button>
+          <button class="btn-secondary btn-sm" @click="openAgent(c.id)">智能解脱</button>
           <button class="btn-sm btn-danger" @click="removeConflict(c.id)">删除</button>
         </div>
       </div>
@@ -123,14 +123,13 @@ onMounted(async () => {
 .pair-detect {
   background: rgba(120, 190, 45, 0.03);
   border: 1px solid var(--border-default);
-  border-radius: var(--radius-md);
-  padding: 12px;
+  border-radius: var(--radius-lg);
+  padding: 16px;
   display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  align-items: center;
+  flex-direction: column;
+  gap: 10px;
 }
-.pair-detect h4 { font-size: 13px; color: var(--green-primary); margin: 0; width: 100%; font-weight: 500; }
+.pair-detect h4 { font-size: 12px; color: var(--text-secondary); margin: 0; font-weight: 500; }
 .pair-result {
   padding: 10px;
   border-radius: var(--radius-sm);
@@ -145,8 +144,8 @@ onMounted(async () => {
 .conflict-list { display: flex; flex-direction: column; gap: 6px; }
 .empty { text-align: center; color: var(--text-disabled); padding: 20px; font-size: 13px; }
 .conflict-item {
-  background: rgba(120, 190, 45, 0.03);
-  border: 1px solid var(--border-default);
+  background: rgba(62, 63, 62, 0.58);
+  border: 1px solid rgba(29, 29, 29, 0.5);
   border-radius: var(--radius-md);
   padding: 12px;
   display: flex;
@@ -162,9 +161,9 @@ onMounted(async () => {
   box-shadow: 0 0 8px rgba(120, 190, 45, 0.1);
 }
 .conflict-info { display: flex; flex-direction: column; gap: 2px; }
-.conflict-info strong { color: var(--text-primary); }
+.conflict-info strong { color: var(--text-primary); font-size: 14px; }
 .conflict-meta, .conflict-time { font-size: 11px; color: var(--text-secondary); }
-.conflict-actions { display: flex; gap: 6px; }
+.conflict-actions { display: flex; flex-direction: column; gap: 6px; }
 .severity-tag { font-size: 11px; padding: 2px 8px; border-radius: var(--radius-sm); font-weight: 500; }
 .severity-high { color: var(--error-color); background: rgba(255, 92, 92, 0.12); }
 .severity-medium { color: var(--warning-color); background: rgba(255, 179, 71, 0.12); }
