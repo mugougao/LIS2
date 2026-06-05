@@ -47,9 +47,3 @@ export const api = {
     request('/agent/session', { method: 'POST', body: JSON.stringify({ conflictEventId }) }),
   getSession: (id) => request(`/agent/session/${id}`)
 };
-
-export function createWebSocket(sessionId) {
-  const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-  const ws = new WebSocket(`${protocol}//${window.location.host}/ws/agent?sessionId=${sessionId}`);
-  return ws;
-}

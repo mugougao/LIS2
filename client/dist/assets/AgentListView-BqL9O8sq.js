@@ -1,1 +1,0 @@
-import{_ as s,c,a as t,o as a}from"./index-DMANVR4e.js";const o={},n={class:"agent-view"};function r(d,e){return a(),c("div",n,[...e[0]||(e[0]=[t("div",{class:"placeholder"},"智能调度模块",-1)])])}const i=s(o,[["render",r],["__scopeId","data-v-accc30df"]]);export{i as default};

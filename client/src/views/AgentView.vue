@@ -13,9 +13,6 @@
       <div class="agent-chat">
         <AgentDialog :conflictId="conflictId" @resolved="onResolved" />
       </div>
-      <div class="agent-map">
-        <CesiumViewer />
-      </div>
     </div>
     <div v-if="resolved" class="resolved-overlay">
       <div class="resolved-card">
@@ -31,7 +28,6 @@ import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { api } from '../utils/api';
 import AgentDialog from '../components/AgentDialog.vue';
-import CesiumViewer from '../components/CesiumViewer.vue';
 
 const props = defineProps({ conflictId: String });
 const router = useRouter();
@@ -62,11 +58,11 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.agent-view { width: 100%; height: 100%; display: flex; flex-direction: column; background: var(--bg-primary); position: relative; }
+.agent-view { position: absolute; left: 0; top: 0; width: 25%; min-width: 320px; height: 100%; display: flex; flex-direction: column; background: linear-gradient(180deg, rgba(8, 25, 27, 0.94), rgba(4, 17, 18, 0.92)); border: 1px solid rgba(83, 119, 120, 0.32); border-left: 0; border-radius: 0 6px 6px 0; overflow: hidden; z-index: 10; box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 0 28px rgba(0,0,0,0.28); pointer-events: auto; }
 .agent-header {
-  display: flex; align-items: center; gap: 16px; padding: 12px 18px; background: var(--bg-secondary); border-bottom: 1px solid var(--border-default); flex-wrap: wrap;
+  display: flex; align-items: center; gap: 16px; padding: 12px 18px; background: rgba(3, 14, 15, 0.66); border-bottom: 1px solid rgba(83, 119, 120, 0.32); flex-wrap: wrap; flex-shrink: 0;
 }
-.agent-header h3 { margin: 0; font-size: 16px; color: var(--green-primary); font-weight: 600; }
+.agent-header h3 { margin: 0; font-size: 14px; color: var(--green-primary); font-weight: 600; }
 .back-btn {
   padding: 6px 14px;
   background: transparent;
@@ -80,8 +76,7 @@ onMounted(async () => {
 .back-btn:hover { border-color: var(--green-primary); color: var(--green-primary); }
 .conflict-summary { display: flex; gap: 12px; font-size: 12px; color: var(--text-secondary); width: 100%; }
 .agent-main { display: flex; flex: 1; overflow: hidden; min-height: 0; }
-.agent-chat { width: 480px; min-width: 480px; height: 100%; min-height: 0; display: flex; flex-direction: column; border-right: 1px solid var(--border-default); }
-.agent-map { flex: 1; height: 100%; }
+.agent-chat { width: 100%; height: 100%; position: relative; }
 .resolved-overlay {
   position: absolute; inset: 0; background: rgba(10, 15, 15, 0.85); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 100;
 }

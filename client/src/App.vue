@@ -1,48 +1,50 @@
 <template>
   <n-config-provider :theme="naiveTheme" :theme-overrides="themeOverrides">
     <div class="app-shell">
-      <nav class="top-nav">
-        <span class="nav-title">51LIS低空智能监管系统</span>
-        <div class="nav-links">
-          <router-link to="/" class="nav-link" active-class="nav-link--active" exact>规划管理</router-link>
-          <router-link to="/conflict" class="nav-link" active-class="nav-link--active">态势监控</router-link>
-          <router-link to="/agent" class="nav-link" active-class="nav-link--active">基础设施</router-link>
-        </div>
-      </nav>
+      <TopBar v-model:scene-mode="sceneMode" />
       <div class="app-content">
-        <router-view />
+        <WdpViewer class="global-wdp" />
+        <div class="page-layer">
+          <router-view v-slot="{ Component }">
+            <component :is="Component" :scene-mode="sceneMode" />
+          </router-view>
+        </div>
       </div>
     </div>
   </n-config-provider>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { ref } from 'vue'
 import { darkTheme, NConfigProvider } from 'naive-ui'
+import WdpViewer from './components/WdpViewer.vue'
+import TopBar from './components/situation/TopBar.vue'
+
+const sceneMode = ref('3D')
 
 const themeOverrides = {
   common: {
-    primaryColor: '#78BE2D',
-    primaryColorHover: '#8FD43E',
-    primaryColorPressed: '#5E9C22',
-    primaryColorSuppl: '#78BE2D',
-    borderRadius: '10px',
-    popoverColor: 'rgba(24, 24, 28, 0.72)',
-    cardColor: 'rgba(24, 24, 28, 0.72)',
+    primaryColor: '#17E18A',
+    primaryColorHover: '#19F49A',
+    primaryColorPressed: '#0FBB72',
+    primaryColorSuppl: '#17E18A',
+    borderRadius: '6px',
+    popoverColor: 'rgba(5, 18, 20, 0.94)',
+    cardColor: 'rgba(5, 18, 20, 0.94)',
   },
   Select: {
     peers: {
       InternalSelection: {
-        borderRadius: '10px',
+        borderRadius: '6px',
       }
     }
   },
   DatePicker: {
-    itemBorderRadius: '10px',
-    panelColor: 'rgba(24, 24, 28, 0.72)',
+    itemBorderRadius: '6px',
+    panelColor: 'rgba(5, 18, 20, 0.94)',
   },
   TimePicker: {
-    panelColor: 'rgba(24, 24, 28, 0.72)',
+    panelColor: 'rgba(5, 18, 20, 0.94)',
   },
 }
 
@@ -55,48 +57,26 @@ const naiveTheme = darkTheme
   flex-direction: column;
   width: 100%;
   height: 100%;
-}
-.top-nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 56px;
-  padding: 0 20px;
-  background: rgba(62, 63, 62, 0.1);
-  border-bottom: 1px solid var(--border-default);
-  flex-shrink: 0;
-  z-index: 20;
-}
-.nav-title {
-  font-size: 24px;
-  font-weight: 700;
-  color: var(--green-primary);
-  letter-spacing: 0.5px;
-}
-.nav-links {
-  display: flex;
-  gap: 4px;
-}
-.nav-link {
-  padding: 6px 18px;
-  border-radius: var(--radius-md);
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text-secondary);
-  text-decoration: none;
-  transition: all var(--transition-fast);
-}
-.nav-link:hover {
-  color: var(--green-hover);
-  background: rgba(120, 190, 45, 0.08);
-}
-.nav-link--active {
-  color: var(--green-primary);
-  background: rgba(120, 190, 45, 0.12);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(18, 226, 139, 0.12), transparent 34%),
+    linear-gradient(180deg, #020708, #061211 45%, #03090a);
 }
 .app-content {
   flex: 1;
+  min-height: 0;
   overflow: hidden;
+  position: relative;
+}
+.global-wdp {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.page-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
 }
 </style>
 

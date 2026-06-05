@@ -26,7 +26,7 @@ export const useNoFlyStore = defineStore('nofly', {
       return zone;
     },
     async deleteZone(id) {
-      await api.deleteZone(id);
+      await api.deleteNoFlyZone(id);
       await this.fetchZones();
     }
   }

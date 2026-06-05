@@ -11,7 +11,12 @@
         <input v-model="form.name" placeholder="禁飞区名称" />
       </div>
       <div class="form-row">
-        <label>GeoJSON 多边形</label>
+        <label class="geometry-label">
+          <span>GeoJSON 多边形</span>
+          <button class="btn-measure" @click="startMeasuring" :disabled="measuring">
+            {{ measuring ? '绘制中...' : '手动创建' }}
+          </button>
+        </label>
         <textarea v-model="form.geometry_text" rows="4" placeholder='{"type":"Polygon","coordinates":[[[lon,lat],...]]}'></textarea>
       </div>
       <div class="form-group">
@@ -40,10 +45,15 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue';
 import { useNoFlyStore } from '../stores/nofly';
+import { useOverlayManager } from '../composables/useOverlayManager';
+import { useMeasure } from '../composables/useMeasure';
 
 const store = useNoFlyStore();
+const overlayManager = useOverlayManager();
+const { startPolygonMeasure } = useMeasure();
 const zones = computed(() => store.zones);
 const showForm = ref(false);
+const measuring = ref(false);
 
 const form = reactive({
   name: '',
@@ -51,6 +61,21 @@ const form = reactive({
   min_alt: 0,
   max_alt: 500
 });
+
+async function startMeasuring() {
+  measuring.value = true
+  try {
+    const geojson = await startPolygonMeasure()
+    if (geojson) {
+      form.geometry_text = geojson
+    }
+  } catch (e) {
+    console.error('测量失败:', e)
+    alert('测量失败: ' + e.message)
+  } finally {
+    measuring.value = false
+  }
+}
 
 async function submitZone() {
   let geometry;
@@ -67,7 +92,10 @@ async function submitZone() {
 }
 
 async function removeZone(id) {
-  if (confirm('确认删除？')) await store.deleteZone(id);
+  if (confirm('确认删除？')) {
+    await store.deleteZone(id);
+    await overlayManager.removeZone(id);
+  }
 }
 
 onMounted(() => store.fetchZones());
@@ -89,6 +117,28 @@ onMounted(() => store.fetchZones());
 }
 .form-row { display: flex; flex-direction: column; gap: 4px; }
 .form-row label { font-size: 12px; color: var(--text-secondary); font-weight: 500; }
+.geometry-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.btn-measure {
+  padding: 2px 10px;
+  border: 1px solid var(--green-primary);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--green-primary);
+  font-size: 11px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.btn-measure:hover {
+  background: rgba(120, 190, 45, 0.12);
+}
+.btn-measure:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 .form-row input, .form-row textarea {
   padding: 8px 12px;
   background: var(--bg-tertiary);

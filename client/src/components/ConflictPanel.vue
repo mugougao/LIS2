@@ -44,12 +44,14 @@ import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useConflictStore } from '../stores/conflict';
 import { usePlansStore } from '../stores/plans';
+import { useOverlayManager } from '../composables/useOverlayManager';
 import { api } from '../utils/api';
 import { NSelect } from 'naive-ui';
 
 const router = useRouter();
 const conflictStore = useConflictStore();
 const plansStore = usePlansStore();
+const overlayManager = useOverlayManager();
 
 const conflicts = computed(() => conflictStore.conflicts);
 const plans = computed(() => plansStore.plans);
@@ -102,7 +104,10 @@ async function runPairDetect() {
 }
 
 async function removeConflict(id) {
-  if (confirm('确认删除？')) await conflictStore.deleteConflict(id);
+  if (confirm('确认删除？')) {
+    await conflictStore.deleteConflict(id);
+    await overlayManager.removeConflict(id);
+  }
 }
 
 function openAgent(conflictId) {
