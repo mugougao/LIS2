@@ -10,9 +10,10 @@ const props = defineProps({
 })
 
 const tone = computed(() => {
-  if (['生效中', '在线', '正常'].includes(props.label)) return 'is-green'
-  if (['审批中', '临时管控', '待命'].includes(props.label)) return 'is-yellow'
-  if (['告警中', '冲突预警'].includes(props.label)) return 'is-red'
+  if (['生效中', '在线', '正常', '监控', '通航'].includes(props.label)) return 'is-green'
+  if (['审批中', '临时管控', '待命', '活动保障'].includes(props.label)) return 'is-yellow'
+  if (['告警中', '冲突预警', '禁飞'].includes(props.label)) return 'is-red'
+  if (['管制', '训练'].includes(props.label)) return 'is-blue'
   if (props.label === '执行中') return 'is-cyan'
   return 'is-muted'
 })
@@ -35,5 +36,6 @@ const tone = computed(() => {
 .is-yellow { color: #ffc333; background: rgba(255, 195, 51, 0.12); }
 .is-red { color: #ff4d42; background: rgba(255, 77, 66, 0.12); }
 .is-cyan { color: #22d4ff; background: rgba(34, 212, 255, 0.12); }
+.is-blue { color: #4a9fff; background: rgba(74, 159, 255, 0.12); }
 .is-muted { color: #8aa1a2; background: rgba(138, 161, 162, 0.1); }
 </style>

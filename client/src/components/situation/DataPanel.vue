@@ -23,10 +23,16 @@ import AircraftDetailPanel from './AircraftDetailPanel.vue'
 
 const props = defineProps({
   activeObjectType: { type: String, required: true },
-  selectedObjectId: { type: String, required: true }
+  selectedObjectId: { type: String, required: true },
+  airspaces: { type: Array, default: null }
 })
 
-const selected = computed(() => findObject(props.activeObjectType, props.selectedObjectId))
+const selected = computed(() => {
+  if (props.activeObjectType === 'airspace' && props.airspaces) {
+    return props.airspaces.find((a) => a.id === props.selectedObjectId) || props.airspaces[0]
+  }
+  return findObject(props.activeObjectType, props.selectedObjectId)
+})
 const title = computed(() => {
   if (props.activeObjectType === 'airspace') return '数据面板'
   if (props.activeObjectType === 'route') return '航线面板'

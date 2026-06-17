@@ -58,7 +58,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'change'])
 
 const maxAltitude = 1200
 const step = 10
@@ -105,6 +105,8 @@ function setNearestBound(value) {
   const distanceToMin = Math.abs(value - range.value.min)
   const distanceToMax = Math.abs(value - range.value.max)
   updateRange(distanceToMin <= distanceToMax ? { min: value } : { max: value })
+  // 离散点击为一次性交互，立即提交
+  emit('change', { ...range.value })
 }
 
 function onTrackPointerDown(event) {
@@ -126,6 +128,8 @@ function onPointerMove(event) {
 function stopDrag() {
   dragging.value = null
   window.removeEventListener('pointermove', onPointerMove)
+  // 拖动结束后再提交一次，避免拖动过程中频繁触发
+  emit('change', { ...range.value })
 }
 
 onBeforeUnmount(() => {

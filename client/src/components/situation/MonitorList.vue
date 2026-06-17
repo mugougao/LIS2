@@ -8,7 +8,7 @@
     <ObjectTypeTabs :model-value="activeObjectType" @update:model-value="$emit('type-change', $event)" />
     <AirspaceList
       v-if="activeObjectType === 'airspace'"
-      :items="airspaces"
+      :items="airspaceItems"
       :selected-id="selectedObjectId"
       :is-altitude-matched="isAltitudeMatched"
       @select="$emit('select', $event)"
@@ -31,17 +31,21 @@
 </template>
 
 <script setup>
-import { airspaces, aircraft, routes } from '../../data/situationMock'
+import { computed } from 'vue'
+import { airspaces as airspacesMock, aircraft, routes } from '../../data/situationMock'
 import ObjectTypeTabs from './ObjectTypeTabs.vue'
 import AirspaceList from './AirspaceList.vue'
 import RouteList from './RouteList.vue'
 import AircraftList from './AircraftList.vue'
 
-defineProps({
+const props = defineProps({
   activeObjectType: { type: String, required: true },
   selectedObjectId: { type: String, required: true },
-  isAltitudeMatched: { type: Function, required: true }
+  isAltitudeMatched: { type: Function, required: true },
+  airspaces: { type: Array, default: null }
 })
+
+const airspaceItems = computed(() => props.airspaces || airspacesMock)
 
 defineEmits(['type-change', 'select'])
 </script>

@@ -67,25 +67,28 @@ async function clearOverlays() {
 // ============================================================
 
 async function drawAllPlans(App, plans) {
-  const { drawPlanPath, drawPlanDeparture, drawPlanArrival, removePlanEntity } = getSharedState()
+  const { buildPlanDescriptors, batchAddEntities } = getSharedState()
 
+  const ids = []
+  const descriptors = []
   for (const plan of plans) {
-    await removePlanEntity(App, plan.id)
-    await drawPlanPath(App, plan)
-    await drawPlanDeparture(App, plan)
-    await drawPlanArrival(App, plan)
+    ids.push(`plan-path-${plan.id}`, `plan-departure-${plan.id}`, `plan-arrival-${plan.id}`)
+    descriptors.push(...buildPlanDescriptors(App, plan))
   }
+
+  if (ids.length) {
+    try { await App.Scene.ClearByCustomId(ids) } catch (e) { console.warn('ClearByCustomId 失败:', e) }
+  }
+  await batchAddEntities(App, descriptors)
 }
 
 async function addPlan(plan) {
-  const { getApp, isSceneReady, drawPlanPath, drawPlanDeparture, drawPlanArrival } = getSharedState()
+  const { getApp, isSceneReady, buildPlanDescriptors, batchAddEntities } = getSharedState()
 
   const App = getApp()
   if (!App || !isSceneReady.value) return
 
-  await drawPlanPath(App, plan)
-  await drawPlanDeparture(App, plan)
-  await drawPlanArrival(App, plan)
+  await batchAddEntities(App, buildPlanDescriptors(App, plan))
 }
 
 async function removePlan(id) {
@@ -102,21 +105,28 @@ async function removePlan(id) {
 // ============================================================
 
 async function drawAllZones(App, zones) {
-  const { drawNoFlyZone, removeZoneEntity } = getSharedState()
+  const { buildZoneDescriptors, batchAddEntities, removeZoneEntity } = getSharedState()
 
+  const ids = []
+  const descriptors = []
   for (const zone of zones) {
-    await removeZoneEntity(App, zone.id)
-    await drawNoFlyZone(App, zone)
+    ids.push(`nofly-${zone.id}`, `nofly-label-${zone.id}`)
+    descriptors.push(...buildZoneDescriptors(App, zone))
   }
+
+  if (ids.length) {
+    try { await App.Scene.ClearByCustomId(ids) } catch (e) { console.warn('ClearByCustomId 失败:', e) }
+  }
+  await batchAddEntities(App, descriptors)
 }
 
 async function addZone(zone) {
-  const { getApp, isSceneReady, drawNoFlyZone } = getSharedState()
+  const { getApp, isSceneReady, buildZoneDescriptors, batchAddEntities } = getSharedState()
 
   const App = getApp()
   if (!App || !isSceneReady.value) return
 
-  await drawNoFlyZone(App, zone)
+  await batchAddEntities(App, buildZoneDescriptors(App, zone))
 }
 
 async function removeZone(id) {
@@ -166,7 +176,7 @@ async function removeConflict(id) {
 // ============================================================
 
 async function onPlansChange(newPlans, oldPlans) {
-  const { getApp, isSceneReady, drawPlanPath, drawPlanDeparture, drawPlanArrival, removePlanEntity } = getSharedState()
+  const { getApp, isSceneReady, buildPlanDescriptors, batchAddEntities, removePlanEntity } = getSharedState()
   const App = getApp()
   if (!isSceneReady.value || !App) return
 
@@ -179,19 +189,18 @@ async function onPlansChange(newPlans, oldPlans) {
     }
   }
 
+  const descriptors = []
   for (const [id, plan] of newMap) {
-    const existed = oldMap.has(id)
-    if (existed) {
+    if (oldMap.has(id)) {
       await removePlanEntity(App, id)
     }
-    await drawPlanPath(App, plan)
-    await drawPlanDeparture(App, plan)
-    await drawPlanArrival(App, plan)
+    descriptors.push(...buildPlanDescriptors(App, plan))
   }
+  await batchAddEntities(App, descriptors)
 }
 
 async function onNoFlyChange(newZones, oldZones) {
-  const { getApp, isSceneReady, drawNoFlyZone, removeZoneEntity } = getSharedState()
+  const { getApp, isSceneReady, buildZoneDescriptors, batchAddEntities, removeZoneEntity } = getSharedState()
   const App = getApp()
   if (!isSceneReady.value || !App) return
 
@@ -204,12 +213,14 @@ async function onNoFlyChange(newZones, oldZones) {
     }
   }
 
+  const descriptors = []
   for (const [id, zone] of newMap) {
     if (oldMap.has(id)) {
       await removeZoneEntity(App, id)
     }
-    await drawNoFlyZone(App, zone)
+    descriptors.push(...buildZoneDescriptors(App, zone))
   }
+  await batchAddEntities(App, descriptors)
 }
 
 async function onConflictsChange(newConflicts, oldConflicts) {

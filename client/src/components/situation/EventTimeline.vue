@@ -1,7 +1,7 @@
 <template>
   <footer class="event-timeline">
     <div class="timeline-head">
-      <h2>事件轴（05-24）</h2>
+      <h2>空域事件轴（05-24）</h2>
       <span>当前事件：{{ selectedEvent?.title }} · {{ selectedEvent?.detail }}</span>
     </div>
 
@@ -54,7 +54,7 @@
 </template>
 
 <script setup>
-import { computed, onBeforeUnmount, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { events } from '../../data/situationMock'
 
 const props = defineProps({
@@ -63,7 +63,7 @@ const props = defineProps({
 })
 
 const marks = [0, 2, 4, 6, 8, 12, 14, 16, 18, 20, 22, 24]
-const emit = defineEmits(['select'])
+const emit = defineEmits(['select', 'scrub'])
 
 const scrollRef = ref(null)
 const eventLineRef = ref(null)
@@ -73,7 +73,7 @@ const dragStartX = ref(0)
 const dragStartScrollLeft = ref(0)
 const selectedEvent = computed(() => events.find((event) => event.id === props.selectedEventId) || events[0])
 
-const currentMinute = ref(632)
+const currentMinute = ref(0)
 const isScrubbing = ref(false)
 const currentTimeLabel = computed(() => {
   const total = Math.round(currentMinute.value)
@@ -116,6 +116,7 @@ function minuteFromClientX(clientX) {
 function startScrub(event) {
   isScrubbing.value = true
   currentMinute.value = minuteFromClientX(event.clientX)
+  emit('scrub', currentMinute.value)
   window.addEventListener('pointermove', onScrub)
   window.addEventListener('pointerup', stopScrub, { once: true })
 }
@@ -123,6 +124,7 @@ function startScrub(event) {
 function onScrub(event) {
   if (!isScrubbing.value) return
   currentMinute.value = minuteFromClientX(event.clientX)
+  emit('scrub', currentMinute.value)
 }
 
 function stopScrub() {
@@ -133,6 +135,10 @@ function stopScrub() {
 onBeforeUnmount(() => {
   window.removeEventListener('pointermove', onScrub)
   window.removeEventListener('pointerup', stopScrub)
+})
+
+onMounted(() => {
+  emit('scrub', currentMinute.value)
 })
 
 function selectEvent(id) {
