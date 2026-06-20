@@ -26,16 +26,17 @@ const tone = computed(() => {
   height: 24px;
   padding: 0 10px;
   border: 1px solid currentColor;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   background: rgba(255, 255, 255, 0.04);
   font-size: 12px;
   font-weight: 700;
   white-space: nowrap;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
 }
-.is-green { color: #15e284; background: rgba(21, 226, 132, 0.12); }
+.is-green { color: var(--green-hover); background: rgba(118, 185, 0, 0.13); }
 .is-yellow { color: #ffc333; background: rgba(255, 195, 51, 0.12); }
 .is-red { color: #ff4d42; background: rgba(255, 77, 66, 0.12); }
-.is-cyan { color: #22d4ff; background: rgba(34, 212, 255, 0.12); }
+.is-cyan { color: var(--cyan-primary); background: rgba(34, 212, 255, 0.12); }
 .is-blue { color: #4a9fff; background: rgba(74, 159, 255, 0.12); }
 .is-muted { color: #8aa1a2; background: rgba(138, 161, 162, 0.1); }
 </style>

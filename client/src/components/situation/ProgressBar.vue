@@ -16,7 +16,7 @@ defineProps({
   height: 7px;
   overflow: hidden;
   border-radius: 999px;
-  background: rgba(154, 185, 185, 0.16);
+  background: rgba(148, 175, 164, 0.16);
 }
 .progress-bar span {
   display: block;
@@ -24,10 +24,10 @@ defineProps({
   border-radius: inherit;
   box-shadow: 0 0 12px currentColor;
 }
-.green { color: #17e78d; background: currentColor; }
+.green { color: var(--green-hover); background: linear-gradient(90deg, var(--green-primary), var(--green-hover)); }
 .yellow { color: #ffc333; background: currentColor; }
 .red { color: #ff4d42; background: currentColor; }
-.cyan { color: #21d7ff; background: currentColor; }
+.cyan { color: var(--cyan-primary); background: currentColor; }
 .blue { color: #4a9fff; background: currentColor; }
 .muted { color: #607477; background: currentColor; }
 </style>

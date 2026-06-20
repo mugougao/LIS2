@@ -22,9 +22,9 @@ defineProps({
   display: grid;
   place-items: center;
   background:
-    conic-gradient(#18e18a var(--value), rgba(22, 224, 136, 0.14) 0),
+    conic-gradient(var(--green-hover) var(--value), rgba(118, 185, 0, 0.14) 0),
     radial-gradient(circle, rgba(12, 30, 27, 0.96) 57%, transparent 59%);
-  box-shadow: 0 0 26px rgba(24, 225, 138, 0.18);
+  box-shadow: 0 0 26px rgba(118, 185, 0, 0.2);
 }
 .ring-inner {
   width: 74px;
@@ -33,7 +33,7 @@ defineProps({
   display: grid;
   place-items: center;
   background: #071211;
-  border: 1px solid rgba(33, 231, 144, 0.24);
+  border: 1px solid rgba(168, 255, 37, 0.24);
 }
 strong {
   font-size: 22px;

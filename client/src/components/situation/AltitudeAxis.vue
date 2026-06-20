@@ -153,10 +153,12 @@ onBeforeUnmount(() => {
 }
 .axis-card,
 .filter {
-  border: 1px solid rgba(82, 118, 119, 0.35);
-  border-radius: 5px;
-  background: rgba(5, 18, 20, 0.78);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  background: rgba(5, 13, 12, 0.78);
   color: #cde0df;
+  box-shadow: var(--shadow-panel);
+  backdrop-filter: blur(14px) saturate(1.05);
 }
 .axis-card {
   flex: 1 1 auto;
@@ -192,8 +194,8 @@ h3 {
   background: rgba(168, 187, 187, 0.34);
 }
 .range-fill {
-  background: linear-gradient(#eaffff, #17e18a);
-  box-shadow: 0 0 14px rgba(23, 225, 138, 0.75);
+  background: linear-gradient(#f3ffe9, var(--green-hover), var(--green-primary));
+  box-shadow: 0 0 14px rgba(118, 185, 0, 0.75);
 }
 button {
   font: inherit;
@@ -217,7 +219,7 @@ button {
   background: currentColor;
 }
 .tick.active {
-  color: #17e18a;
+  color: var(--green-hover);
   font-weight: 800;
 }
 .thumb {
@@ -227,8 +229,8 @@ button {
   height: 18px;
   border: 0;
   border-radius: 50%;
-  background: #17e18a;
-  box-shadow: 0 0 16px #17e18a;
+  background: linear-gradient(135deg, var(--green-hover), var(--green-primary));
+  box-shadow: 0 0 16px rgba(168, 255, 37, 0.72);
   cursor: grab;
   transform: translateY(50%);
 }
@@ -241,9 +243,9 @@ button {
   top: 50%;
   min-width: 44px;
   padding: 1px 5px;
-  border: 1px solid rgba(23, 225, 138, 0.4);
-  border-radius: 4px;
-  background: rgba(5, 18, 20, 0.92);
+  border: 1px solid rgba(168, 255, 37, 0.4);
+  border-radius: var(--radius-sm);
+  background: rgba(5, 13, 12, 0.92);
   color: #eafff8;
   font-size: 11px;
   line-height: 1.4;

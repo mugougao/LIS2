@@ -148,25 +148,28 @@ function collectEids(value, result = []) {
 <style scoped>
 .situation-topbar {
   display: grid;
-  grid-template-columns: 390px 300px minmax(300px, 1fr) 172px auto;
+  grid-template-columns: 330px 300px minmax(300px, 1fr) 178px auto;
   align-items: center;
-  gap: 16px;
-  height: 76px;
-  padding: 0 18px;
+  gap: 14px;
+  height: var(--ui-topbar-height);
+  padding: 0 20px;
   flex-shrink: 0;
-  border-bottom: 1px solid rgba(28, 226, 148, 0.14);
-  background: linear-gradient(180deg, #020708, #061413);
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.26);
+  border-bottom: 1px solid rgba(168, 255, 37, 0.16);
+  background:
+    linear-gradient(90deg, rgba(2, 7, 6, 0.98), rgba(6, 15, 13, 0.94) 50%, rgba(2, 7, 6, 0.98)),
+    radial-gradient(circle at 42% 0%, rgba(118, 185, 0, 0.16), transparent 36%);
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.34), inset 0 -1px 0 rgba(255, 255, 255, 0.035);
+  backdrop-filter: blur(14px);
   z-index: 30;
 }
 .brand {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
   min-width: 0;
   color: #f4fffb;
   font-family: 'AlimamaShuHeiTi-Bold', 'Microsoft YaHei', 'PingFang SC', sans-serif;
-  font-size: 25px;
+  font-size: 22px;
   font-weight: 800;
   letter-spacing: 0;
   white-space: nowrap;
@@ -174,24 +177,57 @@ function collectEids(value, result = []) {
 .brand-logo {
   position: relative;
   top: 2px;
-  width: 78px;
-  height: 60px;
+  width: 58px;
+  height: 44px;
   flex: 0 0 auto;
   object-fit: contain;
+  filter: drop-shadow(0 0 12px rgba(168, 255, 37, 0.12));
 }
 .brand span {
   flex: 0 0 auto;
 }
 .search {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 10px;
-  height: 36px;
-  padding: 0 12px;
-  border: 1px solid rgba(93, 122, 123, 0.35);
-  border-radius: 5px;
-  background: rgba(10, 25, 25, 0.86);
-  color: #7f9998;
+  height: 38px;
+  padding: 0 14px;
+  border: 1px solid rgba(148, 175, 164, 0.24);
+  border-radius: 8px;
+  background: rgba(5, 13, 12, 0.72);
+  color: #8da49d;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.search:focus-within {
+  border-color: rgba(168, 255, 37, 0.58);
+  box-shadow: 0 0 0 3px rgba(118, 185, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.045);
+}
+.search span {
+  position: relative;
+  width: 15px;
+  height: 15px;
+  flex: 0 0 15px;
+  font-size: 0;
+}
+.search span::before {
+  content: '';
+  position: absolute;
+  inset: 1px 4px 4px 1px;
+  border: 1.8px solid currentColor;
+  border-radius: 50%;
+}
+.search span::after {
+  content: '';
+  position: absolute;
+  right: 1px;
+  bottom: 1px;
+  width: 6px;
+  height: 1.8px;
+  border-radius: 999px;
+  background: currentColor;
+  transform: rotate(45deg);
 }
 .search input {
   width: 100%;
@@ -203,7 +239,7 @@ function collectEids(value, result = []) {
 .module-nav {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   min-width: 0;
 }
 .module-link,
@@ -222,32 +258,48 @@ function collectEids(value, result = []) {
 .module-link {
   display: inline-flex;
   align-items: center;
-  height: 44px;
+  height: 40px;
   padding: 0 18px;
-  border-bottom: 2px solid transparent;
-  border-radius: 4px 4px 0 0;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+  font-weight: 700;
 }
 .module-link:hover {
   color: #eafff6;
-  background: rgba(23, 225, 138, 0.08);
+  border-color: rgba(168, 255, 37, 0.18);
+  background: rgba(118, 185, 0, 0.08);
 }
 .module-link.active {
   color: #eafff6;
-  border-color: #17e18a;
-  background: rgba(23, 225, 138, 0.15);
-  box-shadow: 0 0 20px rgba(23, 225, 138, 0.18);
+  border-color: rgba(168, 255, 37, 0.28);
+  background: linear-gradient(180deg, rgba(118, 185, 0, 0.24), rgba(118, 185, 0, 0.08));
+  box-shadow: 0 0 24px rgba(118, 185, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+.module-link.active::after {
+  content: '';
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  bottom: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--green-hover), transparent);
+  box-shadow: 0 0 12px rgba(168, 255, 37, 0.5);
 }
 .layer-switch {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  height: 34px;
-  border: 1px solid rgba(93, 122, 123, 0.35);
-  border-radius: 5px;
+  height: 36px;
+  border: 1px solid rgba(148, 175, 164, 0.24);
+  border-radius: 8px;
   overflow: hidden;
+  background: rgba(5, 13, 12, 0.72);
 }
 .layer-switch .active {
-  color: #ffffff;
-  background: rgba(23, 225, 138, 0.4);
+  color: #f7fff6;
+  background: linear-gradient(180deg, rgba(118, 185, 0, 0.48), rgba(118, 185, 0, 0.2));
+  box-shadow: inset 0 0 0 1px rgba(168, 255, 37, 0.26);
 }
 .status-strip {
   display: flex;
@@ -258,7 +310,7 @@ function collectEids(value, result = []) {
 }
 .sun {
   color: #ffc12e;
-  font-size: 24px;
+  font-size: 20px;
 }
 .dot {
   width: 10px;
@@ -272,20 +324,21 @@ b {
   min-width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: #ef433f;
+  background: linear-gradient(180deg, #ff665b, #ef433f);
   color: white;
   font-size: 12px;
+  box-shadow: 0 0 12px rgba(239, 67, 63, 0.32);
 }
 @media (max-width: 1500px) {
   .situation-topbar {
-    grid-template-columns: 330px 220px minmax(260px, 1fr) 160px;
+    grid-template-columns: 286px 220px minmax(260px, 1fr) 158px;
   }
   .status-strip {
     display: none;
   }
   .brand {
     gap: 10px;
-    font-size: 21px;
+    font-size: 20px;
   }
   .brand-logo {
     width: 48px;

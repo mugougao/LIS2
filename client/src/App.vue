@@ -30,27 +30,27 @@ const { windLayer } = useSceneLayers()
 
 const themeOverrides = {
   common: {
-    primaryColor: '#17E18A',
-    primaryColorHover: '#19F49A',
-    primaryColorPressed: '#0FBB72',
-    primaryColorSuppl: '#17E18A',
-    borderRadius: '6px',
-    popoverColor: 'rgba(5, 18, 20, 0.94)',
-    cardColor: 'rgba(5, 18, 20, 0.94)',
+    primaryColor: '#76B900',
+    primaryColorHover: '#A8FF25',
+    primaryColorPressed: '#5C9400',
+    primaryColorSuppl: '#22D7FF',
+    borderRadius: '8px',
+    popoverColor: 'rgba(7, 15, 13, 0.96)',
+    cardColor: 'rgba(7, 15, 13, 0.96)',
   },
   Select: {
     peers: {
       InternalSelection: {
-        borderRadius: '6px',
+        borderRadius: '8px',
       }
     }
   },
   DatePicker: {
-    itemBorderRadius: '6px',
-    panelColor: 'rgba(5, 18, 20, 0.94)',
+    itemBorderRadius: '8px',
+    panelColor: 'rgba(7, 15, 13, 0.96)',
   },
   TimePicker: {
-    panelColor: 'rgba(5, 18, 20, 0.94)',
+    panelColor: 'rgba(7, 15, 13, 0.96)',
   },
 }
 
@@ -64,8 +64,9 @@ const naiveTheme = darkTheme
   width: 100%;
   height: 100%;
   background:
-    radial-gradient(circle at 50% 0%, rgba(18, 226, 139, 0.12), transparent 34%),
-    linear-gradient(180deg, #020708, #061211 45%, #03090a);
+    radial-gradient(circle at 50% 0%, rgba(118, 185, 0, 0.16), transparent 34%),
+    radial-gradient(circle at 92% 12%, rgba(34, 215, 255, 0.08), transparent 24%),
+    linear-gradient(180deg, #010404, #06100e 45%, #020706);
 }
 .app-content {
   flex: 1;

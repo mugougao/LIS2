@@ -83,8 +83,9 @@ onBeforeUnmount(async () => {
   position: absolute;
   left: 0;
   top: 0;
-  width: 25%;
-  min-width: 320px;
+  width: var(--ui-panel-left);
+  min-width: 360px;
+  max-width: 430px;
   height: 100%;
   z-index: 10;
   pointer-events: none;
@@ -97,29 +98,34 @@ onBeforeUnmount(async () => {
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(180deg, rgba(8, 25, 27, 0.94), rgba(4, 17, 18, 0.92));
+  background: var(--surface-panel-strong);
   color: var(--text-primary);
-  border: 1px solid rgba(83, 119, 120, 0.32);
+  border: 1px solid var(--border-default);
   border-left: 0;
-  border-radius: 0 6px 6px 0;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 0 28px rgba(0, 0, 0, 0.28);
+  border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+  box-shadow: var(--shadow-panel);
+  backdrop-filter: blur(16px) saturate(1.05);
   overflow: hidden;
   pointer-events: auto;
 }
 .sidebar-tabs {
   display: flex;
-  border-bottom: 1px solid rgba(83, 119, 120, 0.32);
-  background: rgba(3, 14, 15, 0.66);
+  gap: 4px;
+  padding: 6px;
+  border-bottom: 1px solid var(--border-default);
+  background: rgba(2, 7, 6, 0.48);
 }
 .sidebar-tabs button {
   flex: 1;
-  padding: 14px 8px;
-  border: none;
+  min-width: 0;
+  padding: 12px 8px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
   background: transparent;
   color: var(--text-secondary);
   cursor: pointer;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 800;
   transition: all var(--transition-fast);
   position: relative;
 }
@@ -127,23 +133,25 @@ onBeforeUnmount(async () => {
   color: var(--green-hover);
 }
 .sidebar-tabs button.active {
-  color: var(--green-primary);
-  background: rgba(23, 225, 138, 0.15);
+  color: #f2ffe7;
+  border-color: rgba(168, 255, 37, 0.22);
+  background: linear-gradient(180deg, rgba(118, 185, 0, 0.26), rgba(118, 185, 0, 0.08));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.045), 0 0 18px rgba(118, 185, 0, 0.14);
 }
 .sidebar-tabs button.active::after {
   content: '';
   position: absolute;
-  bottom: 0;
-  left: 20%;
-  right: 20%;
+  bottom: 1px;
+  left: 18%;
+  right: 18%;
   height: 2px;
-  background: var(--green-primary);
+  background: linear-gradient(90deg, transparent, var(--green-hover), transparent);
   box-shadow: 0 0 12px var(--green-glow);
 }
 .sidebar-content {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  padding: 14px 14px 24px 14px;
+  padding: 14px 14px 24px;
 }
 </style>

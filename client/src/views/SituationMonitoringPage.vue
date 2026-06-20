@@ -11,11 +11,11 @@
       />
       <div class="scene-pass-through">
         <div class="scene-metrics" aria-label="总体统计">
-          <MetricCard icon="▣" label="空域总数" value="9" />
-          <MetricCard icon="⌁" label="活跃航线" value="8" />
-          <MetricCard icon="✣" label="在线飞行器" value="15" tone="cyan" />
-          <MetricCard icon="△" label="冲突预警" value="2" tone="yellow" />
-          <MetricCard icon="!" label="告警总数" value="3" tone="red" />
+          <MetricCard :image="metricIcons.airspaceTotal" label="空域总数" value="9" />
+          <MetricCard :image="metricIcons.activeRoutes" label="活跃航线" value="8" />
+          <MetricCard :image="metricIcons.onlineAircraft" label="在线飞行器" value="15" tone="cyan" />
+          <MetricCard :image="metricIcons.conflictWarning" label="冲突预警" value="2" tone="yellow" />
+          <MetricCard :image="metricIcons.alarmTotal" label="告警总数" value="3" tone="red" />
         </div>
         <AltitudeAxis v-model="selectedAltitudeRange" @change="applyAltitudeFilter" />
       </div>
@@ -38,12 +38,24 @@ import DataPanel from '../components/situation/DataPanel.vue'
 import EventTimeline from '../components/situation/EventTimeline.vue'
 import AltitudeAxis from '../components/situation/AltitudeAxis.vue'
 import MetricCard from '../components/situation/MetricCard.vue'
+import airspaceTotalIcon from '../assets/metric-icons/airspace-total.png'
+import activeRoutesIcon from '../assets/metric-icons/active-routes.png'
+import onlineAircraftIcon from '../assets/metric-icons/online-aircraft.png'
+import conflictWarningIcon from '../assets/metric-icons/conflict-warning.png'
+import alarmTotalIcon from '../assets/metric-icons/alarm-total.png'
 import { onMounted, watch } from 'vue'
 import { useWdpEngine } from '../composables/useWdpEngine'
 import { useWdpEntities } from '../composables/useWdpEntities'
 
 const { isSceneReady } = useWdpEngine()
 const { getApp, buildAirspaceDescriptors, setAirspaceRangeHeight, setAirspaceRangeColor, buildRouteDescriptors, removeRouteEntity, batchAddEntities, drawAircraftFlight, removeAircraftEntity, focusEntity, followEntity, stopFollow, registerEntityClick } = useWdpEntities()
+const metricIcons = {
+  airspaceTotal: airspaceTotalIcon,
+  activeRoutes: activeRoutesIcon,
+  onlineAircraft: onlineAircraftIcon,
+  conflictWarning: conflictWarningIcon,
+  alarmTotal: alarmTotalIcon
+}
 
 // 时间轴当前分钟（00:00 = 0），空域 mock 数据为 00:00 默认状态
 const currentMinute = ref(0)
@@ -337,12 +349,15 @@ watch(selectedObjectId, (id) => {
 
 <style scoped>
 .situation-page {
+  --situation-column-gap: 6px;
+  --situation-row-gap: 2px;
+  --side-panel-top-offset: 8px;
   position: absolute;
   inset: 0;
   display: grid;
-  grid-template-rows: minmax(0, 1fr) 164px;
-  gap: 8px;
-  padding: 0 8px 8px;
+  grid-template-rows: minmax(0, 1fr) 178px;
+  gap: var(--situation-row-gap) var(--situation-column-gap);
+  padding: 0 var(--situation-column-gap) var(--situation-column-gap);
   overflow: hidden;
   color: #dceceb;
   background: transparent;
@@ -350,8 +365,8 @@ watch(selectedObjectId, (id) => {
 }
 .situation-layout {
   display: grid;
-  grid-template-columns: 320px minmax(0, 1fr) 392px;
-  gap: 8px;
+  grid-template-columns: var(--ui-panel-left) minmax(0, 1fr) var(--ui-panel-right);
+  gap: var(--situation-column-gap);
   min-height: 0;
   pointer-events: none;
 }
@@ -369,10 +384,11 @@ watch(selectedObjectId, (id) => {
   z-index: 8;
   display: flex;
   justify-content: center;
-  border: 1px solid rgba(83, 119, 120, 0.32);
-  border-radius: 6px 0 0 6px;
-  background: rgba(5, 18, 20, 0.78);
-  backdrop-filter: blur(8px);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+  background: rgba(5, 13, 12, 0.78);
+  box-shadow: var(--shadow-panel);
+  backdrop-filter: blur(14px) saturate(1.05);
   pointer-events: auto;
 }
 .scene-pass-through :deep(.altitude-axis) {
@@ -383,9 +399,13 @@ watch(selectedObjectId, (id) => {
 .situation-page :deep(.event-timeline) {
   pointer-events: auto;
 }
+.situation-page :deep(.monitor-list),
+.situation-page :deep(.data-panel) {
+  margin-top: var(--side-panel-top-offset);
+}
 @media (max-width: 1500px) {
   .situation-layout {
-    grid-template-columns: 292px minmax(0, 1fr) 344px;
+    grid-template-columns: 330px minmax(0, 1fr) 360px;
   }
 }
 </style>

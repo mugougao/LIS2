@@ -56,10 +56,11 @@ defineEmits(['type-change', 'select'])
   flex-direction: column;
   min-height: 0;
   padding: 16px;
-  border: 1px solid rgba(83, 119, 120, 0.32);
-  border-radius: 6px;
-  background: linear-gradient(180deg, rgba(8, 25, 27, 0.92), rgba(4, 17, 18, 0.9));
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  background: var(--surface-panel);
+  box-shadow: var(--shadow-panel);
+  backdrop-filter: blur(16px) saturate(1.05);
   overflow: auto;
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE/Edge legacy */
@@ -71,8 +72,9 @@ defineEmits(['type-change', 'select'])
 }
 h2 {
   margin: 0 0 12px;
-  color: #e9fffa;
+  color: var(--text-primary);
   font-size: 18px;
+  font-weight: 800;
 }
 .search-row {
   display: grid;
@@ -81,10 +83,11 @@ h2 {
 }
 label,
 .search-row button {
-  height: 34px;
-  border: 1px solid rgba(93, 122, 123, 0.36);
-  border-radius: 5px;
-  background: rgba(3, 14, 15, 0.72);
+  height: 36px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: rgba(5, 13, 12, 0.72);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 label {
   display: flex;
@@ -92,6 +95,36 @@ label {
   gap: 8px;
   padding: 0 10px;
   color: #8aa2a1;
+}
+label:focus-within,
+.search-row button:hover {
+  border-color: rgba(168, 255, 37, 0.48);
+  box-shadow: 0 0 14px rgba(118, 185, 0, 0.16);
+}
+label span {
+  position: relative;
+  width: 14px;
+  height: 14px;
+  flex: 0 0 14px;
+  font-size: 0;
+}
+label span::before {
+  content: '';
+  position: absolute;
+  inset: 1px 4px 4px 1px;
+  border: 1.7px solid currentColor;
+  border-radius: 50%;
+}
+label span::after {
+  content: '';
+  position: absolute;
+  right: 1px;
+  bottom: 1px;
+  width: 6px;
+  height: 1.7px;
+  border-radius: 999px;
+  background: currentColor;
+  transform: rotate(45deg);
 }
 input {
   width: 100%;
@@ -101,7 +134,28 @@ input {
   color: #dceceb;
 }
 .search-row button {
+  position: relative;
   color: #b9cccb;
   cursor: pointer;
+  font-size: 0;
+}
+.search-row button::before,
+.search-row button::after {
+  content: '';
+  position: absolute;
+  left: 11px;
+  right: 11px;
+  height: 2px;
+  border-radius: 999px;
+  background: currentColor;
+}
+.search-row button::before {
+  top: 12px;
+  box-shadow: 5px 5px 0 -0.4px currentColor;
+}
+.search-row button::after {
+  top: 22px;
+  width: 10px;
+  left: 14px;
 }
 </style>
