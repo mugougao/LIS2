@@ -1,18 +1,21 @@
 <template>
   <header class="situation-topbar">
-    <div class="brand">51LIS低空智能监管系统</div>
+    <div class="brand">
+      <img class="brand-logo" :src="logoUrl" alt="51LIS" />
+      <span>51LIS低空智能监管系统</span>
+    </div>
     <label class="search">
       <span>⌕</span>
-      <input placeholder="搜索空域、航线、飞行器、计划..." />
+      <input v-model="globalSearchQuery" placeholder="搜索空域、航线、飞行器、计划..." @keydown.enter="commitSearch" />
     </label>
     <nav class="module-nav">
       <router-link to="/conflict" class="module-link" :class="{ active: route.name === 'conflict' }">态势监控</router-link>
-      <router-link to="/agent" class="module-link" :class="{ active: isInfrastructure }">基础设施</router-link>
+      <router-link to="/infrastructure" class="module-link" :class="{ active: route.name === 'infrastructure' }">基础设施</router-link>
       <router-link to="/" class="module-link" :class="{ active: route.name === 'main' }">规划管理</router-link>
     </nav>
-    <div class="mode-switch">
-      <button :class="{ active: sceneMode === '2D' }" @click="$emit('update:sceneMode', '2D')">2D</button>
-      <button :class="{ active: sceneMode === '3D' }" @click="$emit('update:sceneMode', '3D')">3D</button>
+    <div class="layer-switch">
+      <button :class="{ active: windLayer }" @click="windLayer = !windLayer">风场</button>
+      <button :class="{ active: beidouGrid }" :disabled="beidouGridBusy" @click="toggleBeidouGrid">北斗网格</button>
     </div>
     <div class="status-strip">
       <span>2024-05-24&nbsp;&nbsp;10:32:45</span>
@@ -24,23 +27,128 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import { useRoute } from 'vue-router'
-
-defineProps({
-  sceneMode: { type: String, default: '3D' }
-})
-
-defineEmits(['update:sceneMode'])
+import { ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useWdpEngine } from '../../composables/useWdpEngine'
+import { useGlobalSearch } from '../../composables/useGlobalSearch'
+import { useSceneLayers } from '../../composables/useSceneLayers'
+import logoUrl from '../../assets/logo.svg'
 
 const route = useRoute()
-const isInfrastructure = computed(() => route.name === 'agent-list' || route.name === 'agent')
+const router = useRouter()
+const { getApp, isSceneReady } = useWdpEngine()
+const { globalSearchQuery } = useGlobalSearch()
+const { windLayer } = useSceneLayers()
+const beidouGrid = ref(false)
+const beidouGridBusy = ref(false)
+const beidouGridEids = ref([])
+
+const BEIDOU_GRID_CREATE_PAYLOAD = {
+  apiClassName: 'WdpSceneAPI',
+  apiFuncName: 'CreateEntities',
+  args: {
+    createEntityParams: [
+      {
+        EntityType: 'BP_SpatialGrid_C',
+        BasicInfoAtom: {
+          entityName: 'myName1',
+          customId: 'my-heatmap-id',
+          customData: '{"data":"myCustomData"}'
+        },
+        SpatialGridAtom: {
+          location: [113.93985159904898, 22.52340627715, 18.256940267753663],
+          GridSize: 120,
+          GridNumber: [100, 50, 5]
+        }
+      }
+    ],
+    operations: {
+      calculateCoordZ: {
+        coordZRef: 'surface',
+        coordZOffset: 12
+      }
+    },
+    guid: '1a7575d0-6bee-11f1-a001-bbd7954c13cd'
+  }
+}
+
+function commitSearch() {
+  const query = globalSearchQuery.value.trim()
+  if (!query) return
+  if (/基础|设施|雷达|5g|5G|反无人机|通信|识别|Remote/i.test(query)) {
+    router.push('/infrastructure')
+    return
+  }
+  if (/态势|空域|飞行器|监控/.test(query)) {
+    router.push('/conflict')
+    return
+  }
+  router.push('/')
+}
+
+async function toggleBeidouGrid() {
+  if (beidouGridBusy.value) return
+  const App = getApp()
+  if (!App || !isSceneReady.value) {
+    console.warn('[TopBar] WDP 场景未就绪，无法切换北斗网格')
+    beidouGrid.value = false
+    return
+  }
+
+  beidouGridBusy.value = true
+  try {
+    if (!beidouGrid.value) {
+      const res = await App.Customize.RunCustomizeApi(BEIDOU_GRID_CREATE_PAYLOAD)
+      const eids = res.result?.eids || []
+      if (!eids.length) {
+        console.warn('[TopBar] 北斗网格创建成功但未读取到 eid:', res)
+      }
+      beidouGridEids.value = eids
+      beidouGrid.value = true
+      return
+    }
+
+    if (beidouGridEids.value.length) {
+      await App.Customize.RunCustomizeApi({
+        apiClassName: 'WdpSceneAPI',
+        apiFuncName: 'RemoveEntityByEids',
+        args: {
+          guid: '42b5b870-6bee-11f1-a001-bbd7954c13cd',
+          eids: beidouGridEids.value
+        }
+      })
+    }
+    beidouGridEids.value = []
+    beidouGrid.value = false
+  } catch (e) {
+    console.warn('[TopBar] 北斗网格切换失败:', e)
+    beidouGrid.value = beidouGridEids.value.length > 0
+  } finally {
+    beidouGridBusy.value = false
+  }
+}
+
+function collectEids(value, result = []) {
+  if (!value || typeof value !== 'object') return result
+  if (Array.isArray(value)) {
+    for (const item of value) collectEids(item, result)
+    return [...new Set(result)]
+  }
+  for (const [key, item] of Object.entries(value)) {
+    if (key.toLowerCase() === 'eid' && (typeof item === 'string' || typeof item === 'number')) {
+      result.push(String(item))
+    } else if (item && typeof item === 'object') {
+      collectEids(item, result)
+    }
+  }
+  return [...new Set(result)]
+}
 </script>
 
 <style scoped>
 .situation-topbar {
   display: grid;
-  grid-template-columns: 300px 330px 1fr 116px auto;
+  grid-template-columns: 390px 300px minmax(300px, 1fr) 172px auto;
   align-items: center;
   gap: 16px;
   height: 76px;
@@ -52,11 +160,27 @@ const isInfrastructure = computed(() => route.name === 'agent-list' || route.nam
   z-index: 30;
 }
 .brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
   color: #f4fffb;
-  font-size: 24px;
+  font-family: 'AlimamaShuHeiTi-Bold', 'Microsoft YaHei', 'PingFang SC', sans-serif;
+  font-size: 25px;
   font-weight: 800;
   letter-spacing: 0;
   white-space: nowrap;
+}
+.brand-logo {
+  position: relative;
+  top: 2px;
+  width: 78px;
+  height: 60px;
+  flex: 0 0 auto;
+  object-fit: contain;
+}
+.brand span {
+  flex: 0 0 auto;
 }
 .search {
   display: flex;
@@ -83,13 +207,17 @@ const isInfrastructure = computed(() => route.name === 'agent-list' || route.nam
   min-width: 0;
 }
 .module-link,
-.mode-switch button {
+.layer-switch button {
   border: 0;
   background: transparent;
   color: #b7c9c8;
   cursor: pointer;
   font: inherit;
   text-decoration: none;
+}
+.layer-switch button:disabled {
+  color: #6d8585;
+  cursor: wait;
 }
 .module-link {
   display: inline-flex;
@@ -109,7 +237,7 @@ const isInfrastructure = computed(() => route.name === 'agent-list' || route.nam
   background: rgba(23, 225, 138, 0.15);
   box-shadow: 0 0 20px rgba(23, 225, 138, 0.18);
 }
-.mode-switch {
+.layer-switch {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   height: 34px;
@@ -117,7 +245,7 @@ const isInfrastructure = computed(() => route.name === 'agent-list' || route.nam
   border-radius: 5px;
   overflow: hidden;
 }
-.mode-switch .active {
+.layer-switch .active {
   color: #ffffff;
   background: rgba(23, 225, 138, 0.4);
 }
@@ -150,13 +278,18 @@ b {
 }
 @media (max-width: 1500px) {
   .situation-topbar {
-    grid-template-columns: 260px 240px 1fr 100px;
+    grid-template-columns: 330px 220px minmax(260px, 1fr) 160px;
   }
   .status-strip {
     display: none;
   }
   .brand {
-    font-size: 20px;
+    gap: 10px;
+    font-size: 21px;
+  }
+  .brand-logo {
+    width: 48px;
+    height: 37px;
   }
 }
 </style>

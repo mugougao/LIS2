@@ -7,6 +7,10 @@ const { getDb } = require('./database');
 const apiRoutes = require('./routes/api');
 const { handleAgentWebSocket } = require('./routes/ws');
 const { ensureOperatorsExist } = require('./services/operatorService');
+const { ensureInfrastructureData } = require('./services/infrastructureService');
+const { ensureDefaultPlans } = require('./services/planService');
+const { ensureDefaultNoFlyZones } = require('./services/noflyService');
+const conflictService = require('./services/conflictService');
 
 const PORT = process.env.PORT || 3000;
 
@@ -16,6 +20,20 @@ async function main() {
 
   ensureOperatorsExist();
   console.log('默认运营商数据已就绪');
+
+  ensureDefaultPlans();
+  console.log('默认飞行计划数据已就绪');
+
+  ensureDefaultNoFlyZones();
+  console.log('默认禁飞区数据已就绪');
+
+  ensureInfrastructureData();
+  console.log('基础设施数据已就绪');
+
+  const seededConflicts = conflictService.detectGlobal();
+  if (seededConflicts.length > 0) {
+    console.log(`默认冲突检测已生成 ${seededConflicts.length} 条冲突`);
+  }
 
   const app = express();
   app.use(cors());

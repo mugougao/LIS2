@@ -45,6 +45,8 @@ async function initOverlays() {
   const App = getApp()
   if (!App || !isSceneReady.value) return
 
+  await clearOverlayEntityTypes(App)
+
   const plansStore = usePlansStore()
   const noflyStore = useNoFlyStore()
   const conflictStore = useConflictStore()
@@ -59,7 +61,15 @@ async function clearOverlays() {
   const { getApp, isSceneReady } = getSharedState()
   const App = getApp()
   if (!App || !isSceneReady.value) return
-  await App?.Scene?.ClearByTypes?.(['Poi', 'Path', 'Polygon'])
+  await clearOverlayEntityTypes(App)
+}
+
+async function clearOverlayEntityTypes(App) {
+  try {
+    await App?.Scene?.ClearByTypes?.(['Path', 'Range', 'Poi'])
+  } catch (e) {
+    console.warn('[OverlayManager] 清理 Path/Range/Poi 失败:', e)
+  }
 }
 
 // ============================================================

@@ -1,12 +1,18 @@
 <template>
   <n-config-provider :theme="naiveTheme" :theme-overrides="themeOverrides">
     <div class="app-shell">
-      <TopBar v-model:scene-mode="sceneMode" />
+      <TopBar />
       <div class="app-content">
         <WdpViewer class="global-wdp" />
+        <iframe
+          v-if="windLayer"
+          class="wind-earth-overlay"
+          title="earth 风场"
+          src="https://earth.nullschool.net/zh-cn/#current/wind/surface/level/orthographic=-246.27,22.84,9843/loc=114.382,22.588"
+        ></iframe>
         <div class="page-layer">
           <router-view v-slot="{ Component }">
-            <component :is="Component" :scene-mode="sceneMode" />
+            <component :is="Component" />
           </router-view>
         </div>
       </div>
@@ -15,12 +21,12 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
 import { darkTheme, NConfigProvider } from 'naive-ui'
 import WdpViewer from './components/WdpViewer.vue'
 import TopBar from './components/situation/TopBar.vue'
+import { useSceneLayers } from './composables/useSceneLayers'
 
-const sceneMode = ref('3D')
+const { windLayer } = useSceneLayers()
 
 const themeOverrides = {
   common: {
@@ -72,10 +78,19 @@ const naiveTheme = darkTheme
   inset: 0;
   z-index: 0;
 }
+.wind-earth-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  z-index: 1;
+  background: #020708;
+}
 .page-layer {
   position: absolute;
   inset: 0;
-  z-index: 1;
+  z-index: 2;
   pointer-events: none;
 }
 </style>

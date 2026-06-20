@@ -30,8 +30,8 @@
     </div>
 
     <div class="zone-list">
-      <div v-if="zones.length === 0" class="empty">暂无禁飞区</div>
-      <div v-for="zone in zones" :key="zone.id" class="zone-item">
+      <div v-if="filteredZones.length === 0" class="empty">暂无禁飞区</div>
+      <div v-for="zone in filteredZones" :key="zone.id" class="zone-item">
         <div class="zone-info">
           <strong>{{ zone.name || zone.id.substring(0, 8) }}</strong>
           <span class="zone-meta">高度: {{ zone.min_alt || 0 }}m - {{ zone.max_alt || '∞' }}m</span>
@@ -47,11 +47,18 @@ import { ref, reactive, computed, onMounted } from 'vue';
 import { useNoFlyStore } from '../stores/nofly';
 import { useOverlayManager } from '../composables/useOverlayManager';
 import { useMeasure } from '../composables/useMeasure';
+import { useGlobalSearch } from '../composables/useGlobalSearch';
 
 const store = useNoFlyStore();
 const overlayManager = useOverlayManager();
 const { startPolygonMeasure } = useMeasure();
+const { globalSearchQuery } = useGlobalSearch();
 const zones = computed(() => store.zones);
+const filteredZones = computed(() => {
+  const query = globalSearchQuery.value.trim().toLowerCase();
+  if (!query) return zones.value;
+  return zones.value.filter((zone) => `${zone.name || ''} ${zone.id || ''} ${zone.min_alt || ''} ${zone.max_alt || ''}`.toLowerCase().includes(query));
+});
 const showForm = ref(false);
 const measuring = ref(false);
 

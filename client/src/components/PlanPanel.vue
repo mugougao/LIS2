@@ -89,8 +89,8 @@
     </div>
 
     <div class="plan-list">
-      <div v-if="plans.length === 0" class="empty">暂无飞行计划</div>
-      <div v-for="plan in plans" :key="plan.id" class="plan-item">
+      <div v-if="filteredPlans.length === 0" class="empty">暂无飞行计划</div>
+      <div v-for="plan in filteredPlans" :key="plan.id" class="plan-item">
         <div class="plan-info">
           <strong>{{ plan.plan_name || plan.id.substring(0, 8) }}</strong>
           <span class="plan-meta">运营: {{ plan.operator_id }} | 状态: {{ plan.status }}</span>
@@ -202,6 +202,7 @@ import { usePlansStore } from '../stores/plans';
 import { useNoFlyStore } from '../stores/nofly';
 import { useOverlayManager } from '../composables/useOverlayManager';
 import { useMeasure } from '../composables/useMeasure';
+import { useGlobalSearch } from '../composables/useGlobalSearch';
 import { api } from '../utils/api';
 import { NSelect, NDatePicker, NTimePicker } from 'naive-ui';
 
@@ -209,9 +210,15 @@ const plansStore = usePlansStore();
 const noflyStore = useNoFlyStore();
 const overlayManager = useOverlayManager();
 const { startPointPick } = useMeasure();
+const { globalSearchQuery } = useGlobalSearch();
 
 const plans = computed(() => plansStore.plans);
 const operators = computed(() => plansStore.operators);
+const filteredPlans = computed(() => {
+  const query = globalSearchQuery.value.trim().toLowerCase();
+  if (!query) return plans.value;
+  return plans.value.filter((plan) => `${plan.plan_name || ''} ${plan.id || ''} ${plan.operator_id || ''} ${plan.aircraft_type || ''} ${plan.status || ''}`.toLowerCase().includes(query));
+});
 
 const showForm = ref(false);
 const editMode = ref(false);

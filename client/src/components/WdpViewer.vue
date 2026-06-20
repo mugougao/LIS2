@@ -22,11 +22,26 @@ const { init, isSceneReady, loadingProgress } = useWdpEngine()
 
 const showLoading = ref(!isSceneReady.value && loadingProgress.value < 100)
 
+const INITIAL_CAMERA = {
+  location: [113.9834465855843, 22.485124279571089, 2400.6137883582801],
+  rotation: {
+    pitch: -24.2247314453125,
+    yaw: -88.110244750976562
+  },
+  locationLimit: [],
+  pitchLimit: [-89, 0],
+  yawLimit: [-180, 179.99899291992188],
+  viewDistanceLimit: [1, 10000],
+  controlMode: 'RTS',
+  fieldOfView: 90
+}
+
 onMounted(async () => {
   await init('wdp-container', {
     onSceneReady: async (App) => {
       await App.Renderer.SetRendererMode('full', [3840, 2160])
       await App.Environment.SetSkylightTime('18:30', 1, false)
+      await App.CameraControl.UpdateCamera(INITIAL_CAMERA)
     }
   })
   showLoading.value = false

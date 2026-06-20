@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fontpkg/alimama-shu-hei-ti": "^1.0.5",
     "naive-ui": "^2.44.1",
     "pinia": "^2.2.0",
     "vue": "^3.5.0",

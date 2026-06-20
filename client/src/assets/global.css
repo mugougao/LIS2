@@ -1,3 +1,11 @@
+@font-face {
+  font-family: 'AlimamaShuHeiTi-Bold';
+  src: url('../../node_modules/@fontpkg/alimama-shu-hei-ti/AlimamaShuHeiTi-Bold.woff2') format('woff2');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --bg-primary: #050B0C;
   --bg-secondary: rgba(5, 18, 20, 0.94);

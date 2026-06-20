@@ -16,6 +16,31 @@ export const api = {
   getOperators: () => request('/operators'),
   createOperator: (data) => request('/operators', { method: 'POST', body: JSON.stringify(data) }),
 
+  getInfrastructureSummary: () => request('/infrastructure/summary'),
+  getFacilities: (params = {}) => {
+    const qs = new URLSearchParams(params).toString();
+    return request(`/infrastructure/facilities${qs ? '?' + qs : ''}`);
+  },
+  getFacility: (id) => request(`/infrastructure/facilities/${id}`),
+  createFacility: (data) => request('/infrastructure/facilities', { method: 'POST', body: JSON.stringify(data) }),
+  updateFacility: (id, data) => request(`/infrastructure/facilities/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteFacility: (id) => request(`/infrastructure/facilities/${id}`, { method: 'DELETE' }),
+  updateFacilityStatus: (id, data) => request(`/infrastructure/facilities/${id}/status`, { method: 'POST', body: JSON.stringify(data) }),
+  getFacilityStatusHistory: (id, limit = 30) => request(`/infrastructure/facilities/${id}/status?limit=${limit}`),
+  getFacilityAlerts: (params = {}) => {
+    const qs = new URLSearchParams(params).toString();
+    return request(`/infrastructure/alerts${qs ? '?' + qs : ''}`);
+  },
+  createFacilityAlert: (data) => request('/infrastructure/alerts', { method: 'POST', body: JSON.stringify(data) }),
+  updateFacilityAlert: (id, data) => request(`/infrastructure/alerts/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  getMaintenanceOrders: (params = {}) => {
+    const qs = new URLSearchParams(params).toString();
+    return request(`/infrastructure/maintenance/orders${qs ? '?' + qs : ''}`);
+  },
+  createMaintenanceOrder: (data) => request('/infrastructure/maintenance/orders', { method: 'POST', body: JSON.stringify(data) }),
+  updateMaintenanceOrder: (id, data) => request(`/infrastructure/maintenance/orders/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  evaluateInfrastructureCoverage: (data) => request('/infrastructure/coverage/evaluate', { method: 'POST', body: JSON.stringify(data) }),
+
   getPlans: (params = {}) => {
     const qs = new URLSearchParams(params).toString();
     return request(`/plans${qs ? '?' + qs : ''}`);

@@ -22,8 +22,8 @@
     </div>
 
     <div class="conflict-list">
-      <div v-if="conflicts.length === 0" class="empty">暂无冲突事件</div>
-      <div v-for="c in conflicts" :key="c.id" class="conflict-item" :class="'severity-border-' + c.severity">
+      <div v-if="filteredConflicts.length === 0" class="empty">暂无冲突事件</div>
+      <div v-for="c in filteredConflicts" :key="c.id" class="conflict-item" :class="'severity-border-' + c.severity">
         <div class="conflict-info">
           <strong>{{ c.id.substring(0, 8) }}</strong>
           <span class="severity-tag" :class="'severity-' + c.severity">{{ severityLabel(c.severity) }}</span>
@@ -45,6 +45,7 @@ import { useRouter } from 'vue-router';
 import { useConflictStore } from '../stores/conflict';
 import { usePlansStore } from '../stores/plans';
 import { useOverlayManager } from '../composables/useOverlayManager';
+import { useGlobalSearch } from '../composables/useGlobalSearch';
 import { api } from '../utils/api';
 import { NSelect } from 'naive-ui';
 
@@ -52,9 +53,15 @@ const router = useRouter();
 const conflictStore = useConflictStore();
 const plansStore = usePlansStore();
 const overlayManager = useOverlayManager();
+const { globalSearchQuery } = useGlobalSearch();
 
 const conflicts = computed(() => conflictStore.conflicts);
 const plans = computed(() => plansStore.plans);
+const filteredConflicts = computed(() => {
+  const query = globalSearchQuery.value.trim().toLowerCase();
+  if (!query) return conflicts.value;
+  return conflicts.value.filter((conflict) => `${conflict.id || ''} ${conflict.severity || ''} ${conflict.status || ''} ${conflict.involved_plans || ''}`.toLowerCase().includes(query));
+});
 const loading = ref(false);
 const pair1 = ref(null);
 const pair2 = ref(null);

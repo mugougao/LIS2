@@ -6,10 +6,103 @@ const noflyService = require('../services/noflyService');
 const conflictService = require('../services/conflictService');
 const routingService = require('../services/routingService');
 const agentService = require('../services/agentService');
+const infrastructureService = require('../services/infrastructureService');
 
 // Operators
 router.get('/operators', (req, res) => {
   res.json(operatorService.listOperators());
+});
+
+// Infrastructure
+router.get('/infrastructure/summary', (req, res) => {
+  res.json(infrastructureService.getSummary());
+});
+
+router.get('/infrastructure/facilities', (req, res) => {
+  res.json(infrastructureService.listFacilities(req.query));
+});
+
+router.get('/infrastructure/facilities/:id', (req, res) => {
+  const facility = infrastructureService.getFacility(req.params.id);
+  if (!facility) return res.status(404).json({ error: '基础设施不存在' });
+  res.json(facility);
+});
+
+router.post('/infrastructure/facilities', (req, res) => {
+  try {
+    const facility = infrastructureService.createFacility(req.body);
+    res.status(201).json(facility);
+  } catch (e) {
+    res.status(400).json({ error: e.message });
+  }
+});
+
+router.put('/infrastructure/facilities/:id', (req, res) => {
+  try {
+    const facility = infrastructureService.updateFacility(req.params.id, req.body);
+    if (!facility) return res.status(404).json({ error: '基础设施不存在' });
+    res.json(facility);
+  } catch (e) {
+    res.status(400).json({ error: e.message });
+  }
+});
+
+router.delete('/infrastructure/facilities/:id', (req, res) => {
+  const ok = infrastructureService.deleteFacility(req.params.id);
+  if (!ok) return res.status(404).json({ error: '基础设施不存在' });
+  res.json({ success: true });
+});
+
+router.get('/infrastructure/facilities/:id/status', (req, res) => {
+  res.json(infrastructureService.listStatusSnapshots(req.params.id, req.query.limit));
+});
+
+router.post('/infrastructure/facilities/:id/status', (req, res) => {
+  const facility = infrastructureService.updateFacilityStatus(req.params.id, req.body);
+  if (!facility) return res.status(404).json({ error: '基础设施不存在' });
+  res.json(facility);
+});
+
+router.get('/infrastructure/alerts', (req, res) => {
+  res.json(infrastructureService.listAlerts(req.query));
+});
+
+router.post('/infrastructure/alerts', (req, res) => {
+  try {
+    const alert = infrastructureService.createAlert(req.body);
+    res.status(201).json(alert);
+  } catch (e) {
+    res.status(400).json({ error: e.message });
+  }
+});
+
+router.put('/infrastructure/alerts/:id', (req, res) => {
+  const alert = infrastructureService.updateAlert(req.params.id, req.body);
+  if (!alert) return res.status(404).json({ error: '告警不存在' });
+  res.json(alert);
+});
+
+router.get('/infrastructure/maintenance/orders', (req, res) => {
+  res.json(infrastructureService.listMaintenanceOrders(req.query));
+});
+
+router.post('/infrastructure/maintenance/orders', (req, res) => {
+  try {
+    const order = infrastructureService.createMaintenanceOrder(req.body);
+    res.status(201).json(order);
+  } catch (e) {
+    res.status(400).json({ error: e.message });
+  }
+});
+
+router.put('/infrastructure/maintenance/orders/:id', (req, res) => {
+  const order = infrastructureService.updateMaintenanceOrder(req.params.id, req.body);
+  if (!order) return res.status(404).json({ error: '工单不存在' });
+  res.json(order);
+});
+
+router.post('/infrastructure/coverage/evaluate', (req, res) => {
+  res.json(infrastructureService.evaluateCoverage(req.body));
 });
 
 router.post('/operators', (req, res) => {

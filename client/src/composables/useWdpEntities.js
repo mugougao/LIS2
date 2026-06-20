@@ -195,8 +195,8 @@ function buildZoneDescriptors(App, zone) {
   })
 
   return [
-    { obj: range, opt: { calculateCoordZ: { coordZRef: "surface", coordZOffset: minAlt } } },
-    { obj: label, opt: { calculateCoordZ: { coordZRef: "surface", coordZOffset: minAlt + height / 2 } } }
+    { obj: range, opt: { calculateCoordZ: { coordZRef: "ground", coordZOffset: minAlt } } },
+    { obj: label, opt: { calculateCoordZ: { coordZRef: "ground", coordZOffset: minAlt + height / 2 } } }
   ]
 }
 
@@ -549,6 +549,179 @@ async function removeConflictEntity(App, id) {
 }
 
 // ============================================================
+//  基础设施 Poi + 覆盖范围绘制
+// ============================================================
+
+const FACILITY_TYPE_COLOR_HEX = {
+  '5ga': '17e18a',
+  radar: '20d7ff',
+  counter_uas: 'ff4d42',
+  communication: 'ffc333',
+  identification: '4a9fff'
+}
+
+const FACILITY_STATUS_COLOR_HEX = {
+  online: null,
+  maintenance: 'ffc333',
+  fault: 'ff4d42',
+  offline: '7c9090'
+}
+
+const FACILITY_TYPE_MARKER = {
+  '5ga': 'http://42.121.160.120:5151/poi-5ga-station.png',
+  radar: 'http://42.121.160.120:5151/poi-blind-zone-radar.png',
+  counter_uas: 'http://42.121.160.120:5151/poi-counter-uav-device.png',
+  communication: 'http://42.121.160.120:5151/poi-support-vehicle.png',
+  identification: 'http://42.121.160.120:5151/poi-remote-id-receiver.png'
+}
+
+function facilityMarkerUrl(facility) {
+  if (facility.type === 'radar' && /相控阵/.test(`${facility.subtype || ''}${facility.name || ''}${facility.model || ''}`)) {
+    return 'http://42.121.160.120:5151/poi-phased-array-radar.png'
+  }
+  return FACILITY_TYPE_MARKER[facility.type] || FACILITY_TYPE_MARKER['5ga']
+}
+
+function facilityColorHex(facility) {
+  return FACILITY_STATUS_COLOR_HEX[facility.status] || FACILITY_TYPE_COLOR_HEX[facility.type] || AIRSPACE_COLOR_HEX.green
+}
+
+function buildFacilityDescriptors(App, facility) {
+  if (!facility || facility.lon == null || facility.lat == null) return []
+
+  const descriptors = []
+  const minAlt = Number(facility.min_alt ?? 0)
+  const maxAlt = Number(facility.max_alt ?? 300)
+  const height = Math.max(maxAlt - minAlt, 1)
+  const hex = facilityColorHex(facility)
+  const coverageId = `facility-coverage-${facility.id}`
+  const pointId = `facility-${facility.id}`
+  const status = facility.status_label || facility.status || '未知'
+  const name = facility.name || facility.id
+
+  if (facility.type === 'radar') {
+    const scanScale = Math.max(16, Math.round(Number(facility.coverage_radius || 1000) / 30))
+    const particle = new App.Particle({
+      "location": [facility.lon, facility.lat, facility.alt || 0],
+      "rotator": { "pitch": 0, "yaw": 0, "roll": 0 },
+      "scale3d": [scanScale * 50, scanScale*50, scanScale],
+      "particleType": "circle_scan",
+      "bVisible": true,
+      "entityName": `${name}扫描特效`,
+      "customId": coverageId,
+      "customData": { "data": facility.id }
+    })
+    descriptors.push({ obj: particle, opt: { calculateCoordZ: { coordZRef: "Ground", coordZOffset: facility.alt || 0 } } })
+  } else if (facility.coverage_shape === 'polygon' && facility.coverage_geometry?.coordinates?.length) {
+    const range = new App.Range({
+      "polygon2D": {
+        "coordinates": facility.coverage_geometry.coordinates
+      },
+      "rangeStyle": {
+        "shape": "polygon",
+        "type": "loop_line",
+        "fillAreaType": "dot3",
+        "height": height,
+        "strokeWeight": 10,
+        "color": hex + 'bb',
+        "fillAreaColor": hex + '22',
+        "bBlocked": false
+      },
+      "bVisible": true,
+      "entityName": `${name}覆盖范围`,
+      "customId": coverageId,
+      "customData": { "data": facility.id }
+    })
+    descriptors.push({ obj: range, opt: { calculateCoordZ: { coordZRef: "Ground", coordZOffset: minAlt } } })
+  } else {
+    const range = new App.Range({
+      "circlePolygon2D": {
+        "center": [facility.lon, facility.lat, facility.alt || 0],
+        "radius": Number(facility.coverage_radius || 1000)
+      },
+      "rangeStyle": {
+        "shape": "circle",
+        "type": "loop_line",
+        "fillAreaType": facility.type === '5ga' ? 'radar' : 'dot3',
+        "height": height,
+        "strokeWeight": 8,
+        "color": hex + 'cc',
+        "fillAreaColor": hex + '1f',
+        "bBlocked": false
+      },
+      "bVisible": true,
+      "entityName": `${name}覆盖范围`,
+      "customId": coverageId,
+      "customData": { "data": facility.id }
+    })
+    descriptors.push({ obj: range, opt: { calculateCoordZ: { coordZRef: "Ground", coordZOffset: minAlt } } })
+  }
+
+  const poi = new App.Poi({
+    "location": [facility.lon, facility.lat, facility.alt || 0],
+    "poiStyle": {
+      markerVisible: true,
+      markerNormalUrl: facilityMarkerUrl(facility),
+      markerActivateUrl: facilityMarkerUrl(facility),
+      markerSize: [54, 66],
+      labelVisible: true,
+      labelContent: [`${name} · ${status}`, 'FFFFFFFF', '12'],
+      labelBgImageUrl: 'http://42.121.160.120:5151/lable.png',
+      labelBgSize: [180, 20],
+      labelBgOffset: [-90, 86],
+      textBoxWidth: 180,
+      labelContentJustification: 'Center',
+      labelContentOffset: [0, 3],
+      labelTop: true
+    },
+    "entityName": name,
+    "customId": pointId,
+    "customData": { "data": facility.id },
+    bVisible: true
+  })
+
+  descriptors.push({ obj: poi, opt: { calculateCoordZ: { coordZRef: "Ground", coordZOffset: facility.alt || 0 } } })
+  return descriptors
+}
+
+function buildCoverageEvaluationDescriptors(App, route) {
+  if (!route || route.length < 2) return []
+  const fullPath = new App.Path({
+    "polyline": { "coordinates": route },
+    "pathStyle": {
+      "type": "arrow_dashed",
+      "width": 110,
+      "speedupFactor": 1,
+      "opacity": 1,
+      "color": "ff4d42cc",
+      "passColor": "ff4d42ff"
+    },
+    "entityName": "航线保障评估",
+    "customId": "coverage-evaluation-route",
+    "customData": { "data": "coverage-evaluation" }
+  })
+  return [{ obj: fullPath, opt: { calculateCoordZ: { coordZRef: "Ground", coordZOffset: 120 } } }]
+}
+
+async function removeCoverageEvaluationEntities(App) {
+  try {
+    await App.Scene.ClearByCustomId([
+      'coverage-evaluation-route'
+    ])
+  } catch (e) {
+    console.warn('ClearByCustomId(coverage-evaluation) 失败:', e)
+  }
+}
+
+async function removeFacilityEntity(App, id) {
+  try {
+    await App.Scene.ClearByCustomId([`facility-${id}`, `facility-coverage-${id}`])
+  } catch (e) {
+    console.warn(`ClearByCustomId(facility-${id}) 失败:`, e)
+  }
+}
+
+// ============================================================
 //  POI / 实体 双向绑定（聚焦 + 点击）
 // ============================================================
 
@@ -562,7 +735,9 @@ function parseEntityCustomId(customId) {
     ['aircraft-path-', 'aircraft'],
     ['aircraft-bound-', 'aircraft'],
     ['aircraft-', 'aircraft'],
-    ['route-', 'route']
+    ['route-', 'route'],
+    ['facility-coverage-', 'facility'],
+    ['facility-', 'facility']
   ]
   for (const [prefix, type] of rules) {
     if (customId.startsWith(prefix)) {
@@ -577,6 +752,7 @@ function entityCustomId(type, id) {
   if (type === 'airspace') return `airspace-${id}`
   if (type === 'route') return `route-${id}`
   if (type === 'aircraft') return `aircraft-${id}`
+  if (type === 'facility') return `facility-coverage-${id}`
   return null
 }
 
@@ -664,6 +840,10 @@ export function useWdpEntities() {
     removeRouteEntity,
     drawAircraftFlight,
     removeAircraftEntity,
+    buildFacilityDescriptors,
+    removeFacilityEntity,
+    buildCoverageEvaluationDescriptors,
+    removeCoverageEvaluationEntities,
     focusEntity,
     followEntity,
     stopFollow,
